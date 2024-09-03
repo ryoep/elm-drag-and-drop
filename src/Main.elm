@@ -102,23 +102,35 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "mousedown" (mouseEvent square.id StartDrag)--mousedownイベントが発生した時に、startdragメッセージを生成する（ここではci）
-        , on "mouseup" (Decode.succeed EndDrag)--mouseupイベントが発生した時に、EndDragメッセージを生成する
-        , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
-        , on "touchstart" (mouseEvent square.id StartDrag) -- タッチスタートイベントを追加
-        , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float)) -- タッチムーブイベントを追加
-        , on "touchend" (Decode.succeed EndDrag) -- タッチエンドイベントを追加
+        , on "mousedown" (Decode.map (StartDrag square.id) decodePosition)
+        , on "mousemove" (Decode.map Drag decodePosition)
+        , on "mouseup" (Decode.succeed EndDrag)
+        , on "touchstart" (Decode.map (StartDrag square.id) decodePosition)
+        , on "touchmove" (Decode.map Drag decodePosition)
+        , on "touchend" (Decode.succeed EndDrag)
         ]
-        [ ]
+        []
+
 
 
 -- ID とメッセージ生成関数を受け取り、Decode.Decoder Msg を返し、マウスイベントの位置情報をデコード
-mouseEvent : Int -> (Int -> Float -> Float -> Msg) -> Decode.Decoder Msg
-mouseEvent id toMsg =
-    Decode.map3 toMsg
-        (Decode.succeed id)
-        (Decode.field "clientX" Decode.float)
-        (Decode.field "clientY" Decode.float)
+-- mouseEvent : Int -> (Int -> Float -> Float -> Msg) -> Decode.Decoder Msg
+-- mouseEvent id toMsg =
+--    Decode.map3 toMsg
+--        (Decode.succeed id)
+--        (Decode.field "clientX" Decode.float)
+--        (Decode.field "clientY" Decode.float)
+
+decodePosition : Decode.Decoder (Float, Float)
+decodePosition =
+    Decode.oneOf
+        [ Decode.map2 (,)
+            (Decode.field "clientX" Decode.float)
+            (Decode.field "clientY" Decode.float)
+        , Decode.map2 (,)
+            (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
+            (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
+        ]
 
 
 -- MAIN
