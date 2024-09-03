@@ -1,73 +1,61 @@
-module Main exposing (..)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (style)
+import Html.Events exposing (on)
+import Json.Decode as Decode
 
-import Browser -- Browser モジュールをインポート。Browser.sandbox などの機能を使うため
-import Html exposing (Html, div, text) -- モジュールから Html, div, text をインポート
-import Html.Attributes exposing (..) -- モジュールから全ての属性をインポート
-import Html.Events exposing (on) -- on 関数をインポートします。イベントリスナーを設定するために使用
-import Json.Decode as Decode -- JSON のデコードを扱うための関数を使う
-
--- MODEL
--- Model 型エイリアスを定義
+-- Model
 type alias Model =
-    { squares : List Square -- squares（Square のリスト）と dragInfo（Maybe DragInfo）を持つ
+    { squares : List Square
     , dragInfo : Maybe DragInfo
     }
 
-type alias Square = -- Square 型エイリアスを定義
-    { id : Int      -- 四角形を表し、id、top、left を持つ
+type alias Square =
+    { id : Int
     , top : Float
     , left : Float
     }
 
--- DragInfo 型エイリアスを定義
-type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、offsetX、offsetY を持つ
+type alias DragInfo =
     { id : Int
-    , startX : Float
-    , startY : Float
     , offsetX : Float
     , offsetY : Float
     }
 
--- 初期モデル init を定義
 init : Model
-init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
+init =
     { squares = [ { id = 1, top = 50, left = 50 } ]
     , dragInfo = Nothing
     }
 
-
--- UPDATE
-
+-- Msg
 type Msg
-    = StartDrag Int Float Float -- （ドラッグの開始）
-    | Drag Float Float -- ドラッグの移動
-    | EndDrag  -- ドラッグの終了
+    = StartDrag Int Float Float
+    | Drag Float Float
+    | EndDrag
 
-update : Msg -> Model -> Model -- Msg と Model を受け取り、更新された Model を返す
+-- Update
+update : Msg -> Model -> Model
 update msg model =
     case msg of
-        StartDrag id startX startY -> --startX,startYはマウスのクリック位置
-            case List.head (List.filter (\sq -> sq.id == id) model.squares) of --ドラッグしようとしている四角形をsquaresリストから見つける
-            --List.headがjust squareかNothingのどちらかを返す
+        StartDrag id startX startY ->
+            case List.head (List.filter (\sq -> sq.id == id) model.squares) of
                 Just square ->
                     let
                         offsetX = startX - square.left
                         offsetY = startY - square.top
                     in
-                    { model
-                        | dragInfo = Just { id = id, startX = startX, startY = startY, offsetX = offsetX, offsetY = offsetY }
-                    }
+                    { model | dragInfo = Just { id = id, offsetX = offsetX, offsetY = offsetY } }
                 Nothing ->
                     model
 
-        Drag x y -> -- Drag メッセージを受け取った場合、現在のドラッグ情報を基に四角形の位置を更新
-            case model.dragInfo of --dragInfoの値がJust InfoかNothingか
+        Drag x y ->
+            case model.dragInfo of
                 Just info ->
                     let
-                        newSquares = --空の変数を作って最終的にsquareに入れる
+                        newSquares =
                             List.map
                                 (\sq ->
-                                    if sq.id == info.id then --現在処理中の四角形sqとドラッグ中の四角形idを比較
+                                    if sq.id == info.id then
                                         { sq | top = y - info.offsetY, left = x - info.offsetX }
                                     else
                                         sq
@@ -75,66 +63,49 @@ update msg model =
                                 model.squares
                     in
                     { model | squares = newSquares }
-
                 Nothing ->
                     model
 
-        EndDrag -> -- EndDrag メッセージを受け取った場合、dragInfo を Nothing に
+        EndDrag ->
             { model | dragInfo = Nothing }
 
-
--- VIEW
-
-view : Model -> Html Msg -- Model を受け取り、Html Msg を返す
-
--- squares のリストを viewSquare 関数を使って表示
+-- View
+view : Model -> Html Msg
 view model =
-    div [ id "container", style "position" "relative" ]
+    div [ style "position" "relative", style "width" "100%", style "height" "100vh" ]
         (List.map viewSquare model.squares)
 
 viewSquare : Square -> Html Msg
 viewSquare square =
     div
-        [ class "square"
-        , style "position" "absolute"
+        [ style "position" "absolute"
         , style "width" "50px"
         , style "height" "50px"
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "mousedown" (Decode.map (StartDrag square.id) decodePosition)
-        , on "mousemove" (Decode.map Drag decodePosition)
+        , on "mousedown" (Decode.map (StartDrag square.id) decodeMousePosition)
+        , on "mousemove" (Decode.map Drag decodeMousePosition)
         , on "mouseup" (Decode.succeed EndDrag)
-        , on "touchstart" (Decode.map (StartDrag square.id) decodePosition)
-        , on "touchmove" (Decode.map Drag decodePosition)
+        , on "touchstart" (Decode.map (StartDrag square.id) decodeTouchPosition)
+        , on "touchmove" (Decode.map Drag decodeTouchPosition)
         , on "touchend" (Decode.succeed EndDrag)
         ]
-        []
+        [ text " " ]
 
+-- デコード用の関数
+decodeMousePosition : Decode.Decoder (Float, Float)
+decodeMousePosition =
+    Decode.map2 (,)
+        (Decode.field "clientX" Decode.float)
+        (Decode.field "clientY" Decode.float)
 
+decodeTouchPosition : Decode.Decoder (Float, Float)
+decodeTouchPosition =
+    Decode.map2 (,)
+        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
+        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
 
--- ID とメッセージ生成関数を受け取り、Decode.Decoder Msg を返し、マウスイベントの位置情報をデコード
--- mouseEvent : Int -> (Int -> Float -> Float -> Msg) -> Decode.Decoder Msg
--- mouseEvent id toMsg =
---    Decode.map3 toMsg
---        (Decode.succeed id)
---        (Decode.field "clientX" Decode.float)
---        (Decode.field "clientY" Decode.float)
-
-decodePosition : Decode.Decoder (Float, Float)
-decodePosition =
-    Decode.oneOf
-        [ Decode.map2 (,)
-            (Decode.field "clientX" Decode.float)
-            (Decode.field "clientY" Decode.float)
-        , Decode.map2 (,)
-            (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
-            (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
-        ]
-
-
--- MAIN
-
--- Browser.sandbox を使用してアプリケーションを初期化。init、update、view 関数を渡す。
+-- Main
 main =
     Browser.sandbox { init = init, update = update, view = view }
