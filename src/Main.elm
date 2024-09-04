@@ -84,9 +84,6 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "touchstart" (Decode.map (StartDrag square.id) decodeTouchPosition)
-        , on "touchmove" (Decode.map Drag decodeTouchPosition)
-        , on "touchend" (Decode.succeed EndDrag)
         ]
         [ text " " ]
 
@@ -97,11 +94,11 @@ viewSquare square =
 --        (Decode.field "clientX" Decode.float)
 --        (Decode.field "clientY" Decode.float)
 
-decodeTouchPosition : Decode.Decoder (Float, Float)
-decodeTouchPosition =
-    Decode.map2 (,)
-        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
-        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
+--decodeTouchPosition : Decode.Decoder (Float, Float)
+--decodeTouchPosition =
+--    Decode.map2 (,)
+--        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
+--        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
 
 -- Main
 main =
