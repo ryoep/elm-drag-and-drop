@@ -84,9 +84,6 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "mousedown" (Decode.map (StartDrag square.id) decodeMousePosition)
-        , on "mousemove" (Decode.map Drag decodeMousePosition)
-        , on "mouseup" (Decode.succeed EndDrag)
         , on "touchstart" (Decode.map (StartDrag square.id) decodeTouchPosition)
         , on "touchmove" (Decode.map Drag decodeTouchPosition)
         , on "touchend" (Decode.succeed EndDrag)
@@ -94,11 +91,11 @@ viewSquare square =
         [ text " " ]
 
 -- デコード用の関数
-decodeMousePosition : Decode.Decoder (Float, Float)
-decodeMousePosition =
-    Decode.map2 (,)
-        (Decode.field "clientX" Decode.float)
-        (Decode.field "clientY" Decode.float)
+--decodeMousePosition : Decode.Decoder (Float, Float)
+--decodeMousePosition =
+--    Decode.map2 (,)
+--        (Decode.field "clientX" Decode.float)
+--        (Decode.field "clientY" Decode.float)
 
 decodeTouchPosition : Decode.Decoder (Float, Float)
 decodeTouchPosition =
