@@ -1,7 +1,11 @@
+module Main exposing (..)
+
+import Browser
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (style)
 import Html.Events exposing (on)
 import Json.Decode as Decode
+import Json.Decode.Pipeline exposing (required)
 
 -- Model
 type alias Model =
@@ -69,6 +73,19 @@ update msg model =
         EndDrag ->
             { model | dragInfo = Nothing }
 
+-- デコード用の関数
+decodeMousePosition : Decode.Decoder (Float, Float)
+decodeMousePosition =
+    Decode.map2 (,)
+        (Decode.field "clientX" Decode.float)
+        (Decode.field "clientY" Decode.float)
+
+decodeTouchPosition : Decode.Decoder (Float, Float)
+decodeTouchPosition =
+    Decode.map2 (,)
+        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
+        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
+
 -- View
 view : Model -> Html Msg
 view model =
@@ -84,10 +101,14 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
+        , on "mousedown" (Decode.map (StartDrag square.id) decodeMousePosition)
+        , on "mousemove" (Decode.map Drag decodeMousePosition)
+        , on "mouseup" (Decode.succeed EndDrag)
+        , on "touchstart" (Decode.map (StartDrag square.id) decodeTouchPosition)
+        , on "touchmove" (Decode.map Drag decodeTouchPosition)
+        , on "touchend" (Decode.succeed EndDrag)
         ]
         [ text " " ]
-
-
 
 -- Main
 main =
