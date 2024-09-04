@@ -87,18 +87,7 @@ viewSquare square =
         ]
         [ text " " ]
 
--- デコード用の関数
---decodeMousePosition : Decode.Decoder (Float, Float)
---decodeMousePosition =
---    Decode.map2 (,)
---        (Decode.field "clientX" Decode.float)
---        (Decode.field "clientY" Decode.float)
 
---decodeTouchPosition : Decode.Decoder (Float, Float)
---decodeTouchPosition =
---    Decode.map2 (,)
---        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
---        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
 
 -- Main
 main =
