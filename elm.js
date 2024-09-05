@@ -5441,7 +5441,7 @@ var $author$project$Main$viewSquare = function (square) {
 					$author$project$Main$DuplicateSquare(square.id))),
 				A2(
 				$elm$html$Html$Events$on,
-				'touchstart',
+				'duplicate',
 				$author$project$Main$decodeTouches(square.id))
 			]),
 		_List_Nil);

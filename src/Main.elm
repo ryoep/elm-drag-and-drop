@@ -130,7 +130,8 @@ viewSquare square =
         -- 右クリック（contextmenu）で複製
         , on "contextmenu" (Decode.succeed (DuplicateSquare square.id))
         -- 2本指タッチで複製
-        , on "touchstart" (decodeTouches square.id)
+        --, on "touchstart" (decodeTouches square.id)
+        , on "duplicate" (decodeTouches square.id)
         ]
         []
 
