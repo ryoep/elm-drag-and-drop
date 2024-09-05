@@ -1,67 +1,127 @@
 module Main exposing (..)
 
-import Browser
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (style)
-import Html.Events exposing (on)
-import Json.Decode as Decode
+import Browser -- Browser モジュールをインポート。Browser.sandbox などの機能を使うため
+import Html exposing (Html, div, text) -- モジュールから Html, div, text をインポート
+import Html.Attributes exposing (..) -- モジュールから全ての属性をインポート
+import Html.Events exposing (on) -- on 関数をインポートします。イベントリスナーを設定するために使用
+import Json.Decode as Decode -- JSON のデコードを扱うための関数を使う
 
--- Model
+-- MODEL
+-- Model 型エイリアスを定義
 type alias Model =
-    { top : Float
+    { squares : List Square -- squares（Square のリスト）と dragInfo（Maybe DragInfo）を持つ
+    , dragInfo : Maybe DragInfo
+    }
+
+type alias Square = -- Square 型エイリアスを定義
+    { id : Int      -- 四角形を表し、id、top、left を持つ
+    , top : Float
     , left : Float
     }
 
-init : Model
-init =
-    { top = 50
-    , left = 50
+-- DragInfo 型エイリアスを定義
+type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、offsetX、offsetY を持つ
+    { id : Int
+    , startX : Float
+    , startY : Float
+    , offsetX : Float
+    , offsetY : Float
     }
 
--- Msg
-type Msg
-    = TouchStart Float Float
-    | TouchMove Float Float
-    | TouchEnd
+-- 初期モデル init を定義
+init : Model
+init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
+    { squares = [ { id = 1, top = 50, left = 50 } ]
+    , dragInfo = Nothing
+    }
 
--- Update
-update : Msg -> Model -> Model
+
+-- UPDATE
+
+type Msg
+    = StartDrag Int Float Float -- （ドラッグの開始）
+    | Drag Float Float -- ドラッグの移動
+    | EndDrag  -- ドラッグの終了
+
+update : Msg -> Model -> Model -- Msg と Model を受け取り、更新された Model を返す
 update msg model =
     case msg of
-        TouchStart x y ->
-            model  -- タッチ開始時は特に何もしない
-        
-        TouchMove x y ->
-            { model | top = y, left = x } -- タッチ移動中は四角形の位置を更新
+        StartDrag id startX startY -> -- StartDrag メッセージを受け取った場合、ドラッグの開始位置と四角形のオフセットを計算し、dragInfo に保存
+            case List.head (List.filter (\sq -> sq.id == id) model.squares) of
+                Just square ->
+                    let
+                        offsetX = startX - square.left
+                        offsetY = startY - square.top
+                    in
+                    { model
+                        | dragInfo = Just { id = id, startX = startX, startY = startY, offsetX = offsetX, offsetY = offsetY }
+                    }
+                Nothing ->
+                    model
 
-        TouchEnd ->
-            model -- タッチ終了時は特に何もしない
+        Drag x y -> -- Drag メッセージを受け取った場合、現在のドラッグ情報を基に四角形の位置を更新
+            case model.dragInfo of
+                Just info ->
+                    let
+                        newSquares =
+                            List.map
+                                (\sq ->
+                                    if sq.id == info.id then
+                                        { sq | top = y - info.offsetY, left = x - info.offsetX }
+                                    else
+                                        sq
+                                )
+                                model.squares
+                    in
+                    { model | squares = newSquares }
 
--- デコーダ (タッチ座標を取得)
-decodeTouchPosition : Decode.Decoder (Float, Float)
-decodeTouchPosition =
-    Decode.map2 (,)
-        (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
-        (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
+                Nothing ->
+                    model
 
--- View
-view : Model -> Html Msg
+        EndDrag -> -- EndDrag メッセージを受け取った場合、dragInfo を Nothing に
+            { model | dragInfo = Nothing }
+
+
+-- VIEW
+
+view : Model -> Html Msg -- Model を受け取り、Html Msg を返す
+
+-- quares のリストを viewSquare 関数を使って表示
 view model =
-    div [ style "position" "relative", style "width" "100%", style "height" "100vh" ]
-        [ div
-            [ style "position" "absolute"
-            , style "width" "50px"
-            , style "height" "50px"
-            , style "background-color" "red"
-            , style "top" (String.fromFloat model.top ++ "px")
-            , style "left" (String.fromFloat model.left ++ "px")
-            , on "touchstart" (Decode.map TouchStart decodeTouchPosition)
-            , on "touchmove" (Decode.map TouchMove decodeTouchPosition)
-            , on "touchend" (Decode.succeed TouchEnd)
-            ]
-            [ text " " ]
-        ]
+    div [ id "container", style "position" "relative" ]
+        (List.map viewSquare model.squares)
 
--- Main
+viewSquare : Square -> Html Msg
+viewSquare square =
+    div
+        [ class "square"
+        , style "position" "absolute"
+        , style "width" "50px"
+        , style "height" "50px"
+        , style "background-color" "red"
+        , style "top" (String.fromFloat square.top ++ "px")
+        , style "left" (String.fromFloat square.left ++ "px")
+        , on "mousedown" (mouseEvent square.id StartDrag) -- 既存のマウスダウンイベント
+        , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float)) -- 既存のマウスムーブイベント
+        , on "mouseup" (Decode.succeed EndDrag) -- 既存のマウスアップイベント
+        , on "touchstart" (mouseEvent square.id StartDrag) -- タッチスタートイベントを追加
+        , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float)) -- タッチムーブイベントを追加
+        , on "touchend" (Decode.succeed EndDrag) -- タッチエンドイベントを追加
+        ]
+        []
+
+
+-- ID とメッセージ生成関数を受け取り、Decode.Decoder Msg を返し、マウスイベントの位置情報をデコード
+mouseEvent : Int -> (Int -> Float -> Float -> Msg) -> Decode.Decoder Msg
+mouseEvent id toMsg =
+    Decode.map3 toMsg
+        (Decode.succeed id)
+        (Decode.field "clientX" Decode.float)
+        (Decode.field "clientY" Decode.float)
+
+
+-- MAIN
+
+-- Browser.sandbox を使用してアプリケーションを初期化。init、update、view 関数を渡す。
 main =
     Browser.sandbox { init = init, update = update, view = view }
