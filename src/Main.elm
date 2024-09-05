@@ -42,6 +42,7 @@ type Msg
     = StartDrag Int Float Float -- （ドラッグの開始）
     | Drag Float Float -- ドラッグの移動
     | EndDrag  -- ドラッグの終了
+    | DuplicateSquare Int --四角形の複製
 
 update : Msg -> Model -> Model -- Msg と Model を受け取り、更新された Model を返す
 update msg model =
@@ -81,6 +82,24 @@ update msg model =
         EndDrag -> -- EndDrag メッセージを受け取った場合、dragInfo を Nothing に
             { model | dragInfo = Nothing }
 
+        -- 複製機能の処理
+        DuplicateSquare id ->
+            let
+                -- 元の四角形を探す
+                maybeSquare = List.head (List.filter (\sq -> sq.id == id) model.squares)
+                newSquare = 
+                    case maybeSquare of
+                        Just square ->
+                            -- 新しいIDを付与し、元の位置を少しずつずらして複製
+                            { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20 }
+                        Nothing ->
+                            -- 四角形が見つからなかった場合、適切な処理を行う
+                            { id = List.length model.squares + 1, left = 100, top = 100 }
+            in
+            { model | squares = model.squares ++ [newSquare] }
+
+
+
 
 -- VIEW
 
@@ -101,14 +120,33 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
+        -- ドラッグ関連のイベント
         , on "mousedown" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
         , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
         , on "mouseup" (Decode.succeed EndDrag)
         , on "touchstart" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
         , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
         , on "touchend" (Decode.succeed EndDrag)
+        -- 右クリック（contextmenu）で複製
+        , on "contextmenu" (Decode.succeed (DuplicateSquare square.id))
+        -- 2本指タッチで複製
+        , on "touchstart" (decodeTouches square.id)
         ]
         []
+
+decodeTouches : Int -> Decode.Decoder Msg
+decodeTouches id =
+    Decode.field "changedTouches" (Decode.list Decode.value)
+        |> Decode.andThen
+            (\touches ->
+                if List.length touches == 2 then
+                    Decode.succeed (DuplicateSquare id)
+                else
+                    Decode.fail "Not a two-finger touch"
+            )
+
+
+
 
 
 -- MAIN

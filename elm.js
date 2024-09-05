@@ -5254,10 +5254,45 @@ var $author$project$Main$update = F2(
 				} else {
 					return model;
 				}
-			default:
+			case 'EndDrag':
 				return _Utils_update(
 					model,
 					{dragInfo: $elm$core$Maybe$Nothing});
+			default:
+				var id = msg.a;
+				var maybeSquare = $elm$core$List$head(
+					A2(
+						$elm$core$List$filter,
+						function (sq) {
+							return _Utils_eq(sq.id, id);
+						},
+						model.squares));
+				var newSquare = function () {
+					if (maybeSquare.$ === 'Just') {
+						var square = maybeSquare.a;
+						return _Utils_update(
+							square,
+							{
+								id: $elm$core$List$length(model.squares) + 1,
+								left: square.left + 20,
+								top: square.top + 20
+							});
+					} else {
+						return {
+							id: $elm$core$List$length(model.squares) + 1,
+							left: 100,
+							top: 100
+						};
+					}
+				}();
+				return _Utils_update(
+					model,
+					{
+						squares: _Utils_ap(
+							model.squares,
+							_List_fromArray(
+								[newSquare]))
+					});
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
@@ -5276,6 +5311,9 @@ var $author$project$Main$Drag = F2(
 	function (a, b) {
 		return {$: 'Drag', a: a, b: b};
 	});
+var $author$project$Main$DuplicateSquare = function (a) {
+	return {$: 'DuplicateSquare', a: a};
+};
 var $author$project$Main$EndDrag = {$: 'EndDrag'};
 var $author$project$Main$StartDrag = F3(
 	function (a, b, c) {
@@ -5287,6 +5325,22 @@ var $elm$json$Json$Decode$at = F2(
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$Main$decodeTouches = function (id) {
+	return A2(
+		$elm$json$Json$Decode$andThen,
+		function (touches) {
+			return ($elm$core$List$length(touches) === 2) ? $elm$json$Json$Decode$succeed(
+				$author$project$Main$DuplicateSquare(id)) : $elm$json$Json$Decode$fail('Not a two-finger touch');
+		},
+		A2(
+			$elm$json$Json$Decode$field,
+			'changedTouches',
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
+};
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5379,7 +5433,16 @@ var $author$project$Main$viewSquare = function (square) {
 				A2(
 				$elm$html$Html$Events$on,
 				'touchend',
-				$elm$json$Json$Decode$succeed($author$project$Main$EndDrag))
+				$elm$json$Json$Decode$succeed($author$project$Main$EndDrag)),
+				A2(
+				$elm$html$Html$Events$on,
+				'contextmenu',
+				$elm$json$Json$Decode$succeed(
+					$author$project$Main$DuplicateSquare(square.id))),
+				A2(
+				$elm$html$Html$Events$on,
+				'touchstart',
+				$author$project$Main$decodeTouches(square.id))
 			]),
 		_List_Nil);
 };
