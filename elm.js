@@ -5330,22 +5330,6 @@ var $author$project$Main$viewSquare = function (square) {
 				$elm$core$String$fromFloat(square.left) + 'px'),
 				A2(
 				$elm$html$Html$Events$on,
-				'mousedown',
-				A2($author$project$Main$mouseEvent, square.id, $author$project$Main$StartDrag)),
-				A2(
-				$elm$html$Html$Events$on,
-				'mouseup',
-				$elm$json$Json$Decode$succeed($author$project$Main$EndDrag)),
-				A2(
-				$elm$html$Html$Events$on,
-				'mousemove',
-				A3(
-					$elm$json$Json$Decode$map2,
-					$author$project$Main$Drag,
-					A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float),
-					A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float))),
-				A2(
-				$elm$html$Html$Events$on,
 				'touchstart',
 				A2($author$project$Main$mouseEvent, square.id, $author$project$Main$StartDrag)),
 				A2(
