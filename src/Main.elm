@@ -101,20 +101,30 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "touchstart" (mouseEvent square.id StartDrag) -- タッチスタートイベントを追加
-        , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float)) -- タッチムーブイベントを追加
-        , on "touchend" (Decode.succeed EndDrag) -- タッチエンドイベントを追加
+        , on "mousedown" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
+        , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
+        , on "mouseup" (Decode.succeed EndDrag)
+        , on "touchstart" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
+        , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
+        , on "touchend" (Decode.succeed EndDrag)
         ]
         []
 
 
--- ID とメッセージ生成関数を受け取り、Decode.Decoder Msg を返し、マウスイベントの位置情報をデコード
-mouseEvent : Int -> (Int -> Float -> Float -> Msg) -> Decode.Decoder Msg
-mouseEvent id toMsg =
-    Decode.map3 toMsg
-        (Decode.succeed id)
-        (Decode.field "clientX" Decode.float)
-        (Decode.field "clientY" Decode.float)
+
+
+decodePosition : Decode.Decoder (Float, Float)
+decodePosition =
+    Decode.oneOf
+        [ Decode.map2 (\x y -> (x, y))
+            (Decode.field "clientX" Decode.float)
+            (Decode.field "clientY" Decode.float)
+        , Decode.map2 (\x y -> (x, y))
+            (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
+            (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
+        ]
+
+
 
 
 -- MAIN

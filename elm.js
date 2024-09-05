@@ -5289,16 +5289,6 @@ var $elm$json$Json$Decode$at = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$core$String$fromFloat = _String_fromNumber;
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $author$project$Main$mouseEvent = F2(
-	function (id, toMsg) {
-		return A4(
-			$elm$json$Json$Decode$map3,
-			toMsg,
-			$elm$json$Json$Decode$succeed(id),
-			A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float),
-			A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float));
-	});
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5330,8 +5320,46 @@ var $author$project$Main$viewSquare = function (square) {
 				$elm$core$String$fromFloat(square.left) + 'px'),
 				A2(
 				$elm$html$Html$Events$on,
+				'mousedown',
+				A3(
+					$elm$json$Json$Decode$map2,
+					F2(
+						function (x, y) {
+							return A3($author$project$Main$StartDrag, square.id, x, y);
+						}),
+					A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float),
+					A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float))),
+				A2(
+				$elm$html$Html$Events$on,
+				'mousemove',
+				A3(
+					$elm$json$Json$Decode$map2,
+					$author$project$Main$Drag,
+					A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float),
+					A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float))),
+				A2(
+				$elm$html$Html$Events$on,
+				'mouseup',
+				$elm$json$Json$Decode$succeed($author$project$Main$EndDrag)),
+				A2(
+				$elm$html$Html$Events$on,
 				'touchstart',
-				A2($author$project$Main$mouseEvent, square.id, $author$project$Main$StartDrag)),
+				A3(
+					$elm$json$Json$Decode$map2,
+					F2(
+						function (x, y) {
+							return A3($author$project$Main$StartDrag, square.id, x, y);
+						}),
+					A2(
+						$elm$json$Json$Decode$at,
+						_List_fromArray(
+							['changedTouches', '0', 'clientX']),
+						$elm$json$Json$Decode$float),
+					A2(
+						$elm$json$Json$Decode$at,
+						_List_fromArray(
+							['changedTouches', '0', 'clientY']),
+						$elm$json$Json$Decode$float))),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchmove',
