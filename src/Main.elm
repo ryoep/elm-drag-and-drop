@@ -111,22 +111,6 @@ viewSquare square =
         []
 
 
-
-
-decodePosition : Decode.Decoder (Float, Float)
-decodePosition =
-    Decode.oneOf
-        [ Decode.map2 (\x y -> (x, y))
-            (Decode.field "clientX" Decode.float)
-            (Decode.field "clientY" Decode.float)
-        , Decode.map2 (\x y -> (x, y))
-            (Decode.at ["changedTouches", "0", "clientX"] Decode.float)
-            (Decode.at ["changedTouches", "0", "clientY"] Decode.float)
-        ]
-
-
-
-
 -- MAIN
 
 -- Browser.sandbox を使用してアプリケーションを初期化。init、update、view 関数を渡す。
