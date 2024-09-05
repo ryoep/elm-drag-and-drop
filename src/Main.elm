@@ -101,9 +101,6 @@ viewSquare square =
         , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
-        , on "mousedown" (mouseEvent square.id StartDrag) -- 既存のマウスダウンイベント
-        , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float)) -- 既存のマウスムーブイベント
-        , on "mouseup" (Decode.succeed EndDrag) -- 既存のマウスアップイベント
         , on "touchstart" (mouseEvent square.id StartDrag) -- タッチスタートイベントを追加
         , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float)) -- タッチムーブイベントを追加
         , on "touchend" (Decode.succeed EndDrag) -- タッチエンドイベントを追加
