@@ -87,16 +87,18 @@ update msg model =
             let
                 -- 元の四角形を探す
                 maybeSquare = List.head (List.filter (\sq -> sq.id == id) model.squares)
-                newSquare = 
-                    case maybeSquare of
-                        Just square ->
-                            -- 新しいIDを付与し、元の位置を少しずつずらして複製
-                            { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20 }
-                        Nothing ->
-                            -- 四角形が見つからなかった場合、適切な処理を行う
-                            { id = List.length model.squares + 1, left = 100, top = 100 }
             in
-            { model | squares = model.squares ++ [newSquare] }
+            case maybeSquare of
+                Just square ->
+                    -- 新しいIDを付与し、元の位置を少しずつずらして複製
+                    let
+                        newSquare = { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20 }
+                    in
+                    { model | squares = model.squares ++ [newSquare] }
+
+                Nothing ->
+                    -- 何もせず model をそのまま返す
+                    model
 
 
 

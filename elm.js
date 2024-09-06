@@ -5267,32 +5267,26 @@ var $author$project$Main$update = F2(
 							return _Utils_eq(sq.id, id);
 						},
 						model.squares));
-				var newSquare = function () {
-					if (maybeSquare.$ === 'Just') {
-						var square = maybeSquare.a;
-						return _Utils_update(
-							square,
-							{
-								id: $elm$core$List$length(model.squares) + 1,
-								left: square.left + 20,
-								top: square.top + 20
-							});
-					} else {
-						return {
+				if (maybeSquare.$ === 'Just') {
+					var square = maybeSquare.a;
+					var newSquare = _Utils_update(
+						square,
+						{
 							id: $elm$core$List$length(model.squares) + 1,
-							left: 100,
-							top: 100
-						};
-					}
-				}();
-				return _Utils_update(
-					model,
-					{
-						squares: _Utils_ap(
-							model.squares,
-							_List_fromArray(
-								[newSquare]))
-					});
+							left: square.left + 20,
+							top: square.top + 20
+						});
+					return _Utils_update(
+						model,
+						{
+							squares: _Utils_ap(
+								model.squares,
+								_List_fromArray(
+									[newSquare]))
+						});
+				} else {
+					return model;
+				}
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
