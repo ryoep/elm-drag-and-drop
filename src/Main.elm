@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser -- Browser モジュールをインポート。Browser.sandbox などの機能を使うため
 import Html exposing (Html, div, text) -- モジュールから Html, div, text をインポート
 import Html.Attributes exposing (..) -- モジュールから全ての属性をインポート
-import Html.Events exposing (on) -- on 関数をインポートします。イベントリスナーを設定するために使用
+import Html.Events exposing (on, preventDefaultOn) -- on 関数をインポートします。イベントリスナーを設定するために使用
 import Json.Decode as Decode -- JSON のデコードを扱うための関数を使う
 
 -- MODEL
@@ -101,8 +101,6 @@ update msg model =
                     model
 
 
-
-
 -- VIEW
 
 view : Model -> Html Msg -- Model を受け取り、Html Msg を返す
@@ -129,21 +127,20 @@ viewSquare square =
         , on "touchstart" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
         , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
         , on "touchend" (Decode.succeed EndDrag)
-        -- 右クリック（contextmenu）で複製
-        , on "contextmenu" (Decode.succeed (DuplicateSquare square.id))
-        -- 2本指タッチで複製
-        --, on "touchstart" (decodeTouches square.id)
-        , on "duplicate" (decodeTouches square.id)
+        -- 右クリック（contextmenu）で複製し、デフォルト動作を無効化
+        , preventDefaultOn "contextmenu" (Decode.map (\_ -> (DuplicateSquare square.id, True)) Decode.value)
+        -- 2本指タッチで複製し、デフォルト動作を無効化
+        , preventDefaultOn "touchstart" (Decode.map (\_ -> (DuplicateSquare square.id, True)) (decodeTouches square.id))
         ]
         []
 
 decodeTouches : Int -> Decode.Decoder Msg
 decodeTouches id =
-    Decode.field "changedTouches" (Decode.list Decode.value)
+    Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
         |> Decode.andThen
-            (\touches ->
+            (\touches -> --changedTouchesのリストの値を引数としている。
                 if List.length touches == 2 then
-                    Decode.succeed (DuplicateSquare id)
+                    Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
                 else
                     Decode.fail "Not a two-finger touch"
             )

@@ -5348,6 +5348,16 @@ var $elm$html$Html$Events$on = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$Normal(decoder));
 	});
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
 var $author$project$Main$viewSquare = function (square) {
 	return A2(
 		$elm$html$Html$div,
@@ -5429,14 +5439,27 @@ var $author$project$Main$viewSquare = function (square) {
 				'touchend',
 				$elm$json$Json$Decode$succeed($author$project$Main$EndDrag)),
 				A2(
-				$elm$html$Html$Events$on,
+				$elm$html$Html$Events$preventDefaultOn,
 				'contextmenu',
-				$elm$json$Json$Decode$succeed(
-					$author$project$Main$DuplicateSquare(square.id))),
 				A2(
-				$elm$html$Html$Events$on,
-				'duplicate',
-				$author$project$Main$decodeTouches(square.id))
+					$elm$json$Json$Decode$map,
+					function (_v0) {
+						return _Utils_Tuple2(
+							$author$project$Main$DuplicateSquare(square.id),
+							true);
+					},
+					$elm$json$Json$Decode$value)),
+				A2(
+				$elm$html$Html$Events$preventDefaultOn,
+				'touchstart',
+				A2(
+					$elm$json$Json$Decode$map,
+					function (_v1) {
+						return _Utils_Tuple2(
+							$author$project$Main$DuplicateSquare(square.id),
+							true);
+					},
+					$author$project$Main$decodeTouches(square.id)))
 			]),
 		_List_Nil);
 };
