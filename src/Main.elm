@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser -- Browser モジュールをインポート。Browser.sandbox などの機能を使うため
 import Html exposing (Html, div, text) -- モジュールから Html, div, text をインポート
 import Html.Attributes exposing (..) -- モジュールから全ての属性をインポート
-import Html.Events exposing (on, preventDefaultOn) -- on 関数をインポートします。イベントリスナーを設定するために使用
+import Html.Events exposing (on, preventDefaultOn) -- イベントリスナーを設定するために使用
 import Json.Decode as Decode -- JSON のデコードを扱うための関数を使う
 
 -- MODEL
