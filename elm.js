@@ -5451,7 +5451,7 @@ var $author$project$Main$viewSquare = function (square) {
 					$elm$json$Json$Decode$value)),
 				A2(
 				$elm$html$Html$Events$preventDefaultOn,
-				'touchstart',
+				'Duplicate',
 				A2(
 					$elm$json$Json$Decode$map,
 					function (_v1) {

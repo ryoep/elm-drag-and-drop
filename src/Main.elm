@@ -130,7 +130,7 @@ viewSquare square =
         -- 右クリック（contextmenu）で複製し、デフォルト動作を無効化
         , preventDefaultOn "contextmenu" (Decode.map (\_ -> (DuplicateSquare square.id, True)) Decode.value)
         -- 2本指タッチで複製し、デフォルト動作を無効化
-        , preventDefaultOn "touchstart" (Decode.map (\_ -> (DuplicateSquare square.id, True)) (decodeTouches square.id))
+        , preventDefaultOn "Duplicate" (Decode.map (\_ -> (DuplicateSquare square.id, True)) (decodeTouches square.id))
         ]
         []
 
