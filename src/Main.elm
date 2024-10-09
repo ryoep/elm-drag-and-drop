@@ -116,7 +116,7 @@ viewSquare square =
         [ class "square"
         , style "position" "absolute"
         , style "width" "150px"
-        , style "height" "10px50px"
+        , style "height" "150px"
         , style "background-color" "blue"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")

@@ -5372,7 +5372,7 @@ var $author$project$Main$viewSquare = function (square) {
 				$elm$html$Html$Attributes$class('square'),
 				A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
 				A2($elm$html$Html$Attributes$style, 'width', '150px'),
-				A2($elm$html$Html$Attributes$style, 'height', '10px50px'),
+				A2($elm$html$Html$Attributes$style, 'height', '150px'),
 				A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
 				A2(
 				$elm$html$Html$Attributes$style,
