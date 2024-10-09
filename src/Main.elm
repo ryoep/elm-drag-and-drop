@@ -117,7 +117,7 @@ viewSquare square =
         , style "position" "absolute"
         , style "width" "150px"
         , style "height" "150px"
-        , style "background-color" "blue"
+        , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
         -- ドラッグ関連のイベント
@@ -150,14 +150,18 @@ decodeTouches id =
     Decode.field "changedTouches" (Decode.list Decode.value) -- changedTouchesというリストの値をすべてデコード
         |> Decode.andThen
             (\touches -> -- changedTouchesのリストの値を引数としている
-                let 
-                    _ = Debug.log "Touches list length" (String.fromInt (List.length touches)) -- タッチの数をコンソールに出力
-                in
                 if List.length touches == 2 then
+                    let
+                        _ = Debug.log "Touches list length" (String.fromInt (List.length touches)) -- タッチの数をコンソールに出力
+                    in
                     Decode.succeed (DuplicateSquare id) -- DuplicateSquare id メッセージを送信
                 else
+                    let
+                        _ = Debug.log "Touches list length" (String.fromInt (List.length touches)) -- タッチの数をコンソールに出力
+                    in
                     Decode.fail "Not a two-finger touch"
             )
+
 
 
 
