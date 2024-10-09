@@ -5322,13 +5322,29 @@ var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$Main$decodeTouches = function (id) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		function (touches) {
-			return ($elm$core$List$length(touches) === 2) ? $elm$json$Json$Decode$succeed(
-				$author$project$Main$DuplicateSquare(id)) : $elm$json$Json$Decode$fail('Not a two-finger touch');
+			var _v0 = A2($elm$core$Debug$log, 'Touches list content', touches);
+			if ($elm$core$List$length(touches) === 2) {
+				var _v1 = A2(
+					$elm$core$Debug$log,
+					'Touches list length (inside check)',
+					$elm$core$String$fromInt(
+						$elm$core$List$length(touches)));
+				return $elm$json$Json$Decode$succeed(
+					$author$project$Main$DuplicateSquare(id));
+			} else {
+				var _v2 = A2(
+					$elm$core$Debug$log,
+					'Touches list length (else case)',
+					$elm$core$String$fromInt(
+						$elm$core$List$length(touches)));
+				return $elm$json$Json$Decode$fail('Not a two-finger touch');
+			}
 		},
 		A2(
 			$elm$json$Json$Decode$field,
@@ -5367,7 +5383,7 @@ var $author$project$Main$viewSquare = function (square) {
 				A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
 				A2($elm$html$Html$Attributes$style, 'width', '150px'),
 				A2($elm$html$Html$Attributes$style, 'height', '150px'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'red'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
 				A2(
 				$elm$html$Html$Attributes$style,
 				'top',
