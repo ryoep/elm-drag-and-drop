@@ -134,39 +134,16 @@ viewSquare square =
         ]
         []
 
---decodeTouches : Int -> Decode.Decoder Msg
---decodeTouches id =
-  --  Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
-    --    |> Decode.andThen
-      --      (\touches -> --changedTouchesのリストの値を引数としている。
-        --        if List.length touches == 2 then
-          --          Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
-            --    else
-              --      Decode.fail "Not a two-finger touch"
-            --)
-
 decodeTouches : Int -> Decode.Decoder Msg
 decodeTouches id =
-    Decode.field "changedTouches" (Decode.list Decode.value) -- changedTouchesというリストの値をすべてデコード
+    Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
         |> Decode.andThen
-            (\touches -> -- changedTouchesのリストの値を引数としている
+            (\touches -> --changedTouchesのリストの値を引数としている。
                 if List.length touches == 2 then
-                    let
-                        _ = Debug.log "Touches list length" (String.fromInt (List.length touches)) -- タッチの数をコンソールに出力
-                    in
-                    Decode.succeed (DuplicateSquare id) -- DuplicateSquare id メッセージを送信
+                    Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
                 else
-                    let
-                        _ = Debug.log "Touches list length" (String.fromInt (List.length touches)) -- タッチの数をコンソールに出力
-                    in
                     Decode.fail "Not a two-finger touch"
             )
-
-
-
-
-
-
 
 
 -- MAIN
