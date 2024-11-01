@@ -5322,23 +5322,17 @@ var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$Main$decodeTouches = function (id) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		function (touches) {
-			var _v0 = A2(
-				$elm$core$Debug$log,
-				'Touches list length',
-				$elm$core$String$fromInt(
-					$elm$core$List$length(touches)));
 			return ($elm$core$List$length(touches) === 2) ? $elm$json$Json$Decode$succeed(
 				$author$project$Main$DuplicateSquare(id)) : $elm$json$Json$Decode$fail('Not a two-finger touch');
 		},
 		A2(
 			$elm$json$Json$Decode$field,
-			'changedTouches',
+			'Touches',
 			$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
 };
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
