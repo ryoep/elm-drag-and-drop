@@ -117,7 +117,7 @@ viewSquare square =
         , style "position" "absolute"
         , style "width" "150px"
         , style "height" "150px"
-        , style "background-color" "red"
+        , style "background-color" "green"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
         -- ドラッグ関連のイベント
@@ -149,7 +149,10 @@ decodeTouches : Int -> Decode.Decoder Msg
 decodeTouches id =
     Decode.field "Touches" (Decode.list Decode.value) --Touchesというリストの値をすべてデコード
         |> Decode.andThen
-            (\touches -> --changedTouchesのリストの値を引数としている。
+            (\touches -> --changedTouchesのリストの値を引数としている。                 
+                let
+                    _ = Debug.log "Touches list" touches -- デバッグ出力で中身を確認
+                in
                 if List.length touches == 2 then
                     Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
                 else
