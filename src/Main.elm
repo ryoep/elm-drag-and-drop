@@ -117,7 +117,7 @@ viewSquare square =
         , style "position" "absolute"
         , style "width" "150px"
         , style "height" "150px"
-        , style "background-color" "blue"
+        , style "background-color" "red"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
         -- ドラッグ関連のイベント
