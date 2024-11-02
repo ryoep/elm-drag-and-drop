@@ -117,7 +117,7 @@ viewSquare square =
         , style "position" "absolute"
         , style "width" "150px"
         , style "height" "150px"
-        , style "background-color" "red"
+        , style "background-color" "blue"
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
         -- ドラッグ関連のイベント
@@ -165,13 +165,14 @@ decodeTouches id =
         |> Decode.andThen
             (\touches ->
                 let
-                    _ = Debug.log "ChangedTouches list" touches
+                    _ = Debug.log "ChangedTouches Count" (List.length touches) -- リストの長さを確認
                 in
                 if List.length touches == 2 then
                     Decode.succeed (DuplicateSquare id)
                 else
                     Decode.fail "Not a two-finger touch"
             )
+
 
 
 -- MAIN
