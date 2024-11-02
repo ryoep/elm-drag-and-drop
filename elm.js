@@ -5328,13 +5328,13 @@ var $author$project$Main$decodeTouches = function (id) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		function (touches) {
-			var _v0 = A2($elm$core$Debug$log, 'Touches list', touches);
+			var _v0 = A2($elm$core$Debug$log, 'ChangedTouches list', touches);
 			return ($elm$core$List$length(touches) === 2) ? $elm$json$Json$Decode$succeed(
 				$author$project$Main$DuplicateSquare(id)) : $elm$json$Json$Decode$fail('Not a two-finger touch');
 		},
 		A2(
 			$elm$json$Json$Decode$field,
-			'Touches',
+			'changedTouches',
 			$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
 };
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
