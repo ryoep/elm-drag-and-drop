@@ -5159,93 +5159,78 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$initialModel = {touchCount: 0};
+var $author$project$Main$initialModel = {touches: _List_Nil};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$update = F2(
-	function (msg, model) {
-		if (msg.$ === 'TouchStart') {
-			var touches = msg.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						touchCount: $elm$core$List$length(touches)
-					}),
-				$elm$core$Platform$Cmd$none);
-		} else {
-			var touches = msg.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						touchCount: $elm$core$List$length(touches)
-					}),
-				$elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Main$TouchMove = function (a) {
-	return {$: 'TouchMove', a: a};
+var $author$project$Main$UpdateTouches = function (a) {
+	return {$: 'UpdateTouches', a: a};
 };
-var $author$project$Main$TouchStart = function (a) {
-	return {$: 'TouchStart', a: a};
-};
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $author$project$Main$touchPointDecoder = A4(
-	$elm$json$Json$Decode$map3,
-	F3(
-		function (id, pageX, pageY) {
-			return {id: id, pageX: pageX, pageY: pageY};
-		}),
-	A2($elm$json$Json$Decode$field, 'identifier', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$float));
-var $author$project$Main$touchDecoder = A2(
-	$elm$json$Json$Decode$field,
-	'touches',
-	$elm$json$Json$Decode$list($author$project$Main$touchPointDecoder));
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $author$project$Main$touchEvents = _Platform_incomingPort(
+	'touchEvents',
+	$elm$json$Json$Decode$list(
+		A2(
+			$elm$json$Json$Decode$andThen,
+			function (identifier) {
+				return A2(
+					$elm$json$Json$Decode$andThen,
+					function (clientY) {
+						return A2(
+							$elm$json$Json$Decode$andThen,
+							function (clientX) {
+								return $elm$json$Json$Decode$succeed(
+									{clientX: clientX, clientY: clientY, identifier: identifier});
+							},
+							A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float));
+					},
+					A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float));
+			},
+			A2($elm$json$Json$Decode$field, 'identifier', $elm$json$Json$Decode$int))));
+var $author$project$Main$subscriptions = function (_v0) {
+	return $author$project$Main$touchEvents($author$project$Main$UpdateTouches);
+};
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		var touchPoints = msg.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{touches: touchPoints}),
+			$elm$core$Platform$Cmd$none);
+	});
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$Events$on,
-				'touchstart',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$touchDecoder)),
-				A2(
-				$elm$html$Html$Events$on,
-				'touchmove',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchMove, $author$project$Main$touchDecoder)),
-				A2($elm$html$Html$Attributes$style, 'text-align', 'center'),
-				A2($elm$html$Html$Attributes$style, 'margin-top', '50px')
-			]),
+		_List_Nil,
 		_List_fromArray(
 			[
 				$elm$html$Html$text(
-				'Touch count: ' + $elm$core$String$fromInt(model.touchCount))
+				'Number of touches: ' + $elm$core$String$fromInt(
+					$elm$core$List$length(model.touches))),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				A2(
+					$elm$core$List$map,
+					function (tp) {
+						return A2(
+							$elm$html$Html$div,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									'ID: ' + ($elm$core$String$fromInt(tp.identifier) + (', X: ' + ($elm$core$String$fromFloat(tp.clientX) + (', Y: ' + $elm$core$String$fromFloat(tp.clientY))))))
+								]));
+					},
+					model.touches))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
@@ -5253,9 +5238,7 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 		init: function (_v0) {
 			return _Utils_Tuple2($author$project$Main$initialModel, $elm$core$Platform$Cmd$none);
 		},
-		subscriptions: function (_v1) {
-			return $elm$core$Platform$Sub$none;
-		},
+		subscriptions: $author$project$Main$subscriptions,
 		update: $author$project$Main$update,
 		view: $author$project$Main$view
 	});

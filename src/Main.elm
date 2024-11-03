@@ -1,69 +1,72 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (style)
-import Html.Events exposing (on)
 import Json.Decode as Decode
-import Dict exposing (Dict)
 
 
 -- MODEL
 
 type alias Model =
-    { touchCount : Int }
+    { touches : List TouchPoint }
+
+
+type alias TouchPoint =
+    { identifier : Int
+    , clientX : Float
+    , clientY : Float }
 
 
 initialModel : Model
 initialModel =
-    { touchCount = 0 }
-
-
--- MESSAGES
-
-type Msg
-    = TouchStart (List { id : Int, pageX : Float, pageY : Float })
-    | TouchMove (List { id : Int, pageX : Float, pageY : Float })
+    { touches = [] }
 
 
 -- UPDATE
 
-update : Msg -> Model -> (Model, Cmd Msg)
+type Msg
+    = UpdateTouches (List TouchPoint)
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TouchStart touches ->
-            ( { model | touchCount = List.length touches }, Cmd.none )
-
-        TouchMove touches ->
-            ( { model | touchCount = List.length touches }, Cmd.none )
+        UpdateTouches touchPoints ->
+            ( { model | touches = touchPoints }, Cmd.none )
 
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-    div
-        [ on "touchstart" (Decode.map TouchStart touchDecoder)
-        , on "touchmove" (Decode.map TouchMove touchDecoder)
-        , style "text-align" "center"
-        , style "margin-top" "50px"
+    div []
+        [ text <| "Number of touches: " ++ String.fromInt (List.length model.touches)
+        , div []
+            (List.map
+                (\tp -> div [] [ text <| "ID: " ++ String.fromInt tp.identifier ++ ", X: " ++ String.fromFloat tp.clientX ++ ", Y: " ++ String.fromFloat tp.clientY ])
+                model.touches
+            )
         ]
-        [ text ("Touch count: " ++ String.fromInt model.touchCount) ]
 
 
--- TOUCH DECODER
+-- SUBSCRIPTIONS
 
-touchDecoder : Decode.Decoder (List { id : Int, pageX : Float, pageY : Float })
-touchDecoder =
-    Decode.field "touches" (Decode.list touchPointDecoder)
+port touchEvents : (List TouchPoint -> msg) -> Sub msg
 
 
-touchPointDecoder : Decode.Decoder { id : Int, pageX : Float, pageY : Float }
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    touchEvents UpdateTouches
+
+
+-- JSON DECODER
+
+touchPointDecoder : Decode.Decoder TouchPoint
 touchPointDecoder =
-    Decode.map3 (\id pageX pageY -> { id = id, pageX = pageX, pageY = pageY })
+    Decode.map3 TouchPoint
         (Decode.field "identifier" Decode.int)
-        (Decode.field "pageX" Decode.float)
-        (Decode.field "pageY" Decode.float)
+        (Decode.field "clientX" Decode.float)
+        (Decode.field "clientY" Decode.float)
 
 
 -- MAIN
@@ -71,8 +74,8 @@ touchPointDecoder =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = \_ -> (initialModel, Cmd.none)
+        { init = \_ -> ( initialModel, Cmd.none )
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , view = view
         }
