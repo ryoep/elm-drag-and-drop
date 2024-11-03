@@ -28,14 +28,14 @@ type Msg
 
 -- UPDATE
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         TouchStart touches ->
-            { model | touchCount = List.length touches }
+            ( { model | touchCount = List.length touches }, Cmd.none )
 
         TouchMove touches ->
-            { model | touchCount = List.length touches }
+            ( { model | touchCount = List.length touches }, Cmd.none )
 
 
 -- VIEW
@@ -70,4 +70,9 @@ touchPointDecoder =
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = initialModel, update = update, view = view }
+    Browser.element
+        { init = \_ -> (initialModel, Cmd.none)
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        , view = view
+        }
