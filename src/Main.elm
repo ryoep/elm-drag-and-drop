@@ -17,6 +17,7 @@ type alias Square = -- Square 型エイリアスを定義
     { id : Int      -- 四角形を表し、id、top、left を持つ
     , top : Float
     , left : Float
+    , color : String
     }
 
 -- DragInfo 型エイリアスを定義
@@ -31,7 +32,7 @@ type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、of
 -- 初期モデル init を定義
 init : Model
 init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
-    { squares = [ { id = 1, top = 50, left = 50 } ]
+    { squares = [ { id = 1, top = 50, left = 50, color = "green" } ]
     , dragInfo = Nothing
     }
 
@@ -92,7 +93,7 @@ update msg model =
                 Just square ->
                     -- 新しいIDを付与し、元の位置を少しずつずらして複製
                     let
-                        newSquare = { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20 }
+                        newSquare = { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20, color = "blue" }
                     in
                     { model | squares = model.squares ++ [newSquare] }
 
@@ -117,7 +118,7 @@ viewSquare square =
         , style "position" "absolute"
         , style "width" "150px"
         , style "height" "150px"
-        , style "background-color" "green"
+        , style "background-color" square.color
         , style "top" (String.fromFloat square.top ++ "px")
         , style "left" (String.fromFloat square.left ++ "px")
         -- ドラッグ関連のイベント
