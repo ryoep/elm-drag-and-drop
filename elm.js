@@ -5038,7 +5038,7 @@ var $author$project$Main$init = {
 	dragInfo: $elm$core$Maybe$Nothing,
 	squares: _List_fromArray(
 		[
-			{color: 'green', id: 1, left: 50, top: 50}
+			{color: 'red', id: 1, left: 50, top: 50}
 		])
 };
 var $elm$core$Result$Err = function (a) {
@@ -10702,10 +10702,7 @@ var $author$project$Main$decodeTouches = function (id) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		function (touches) {
-			var _v0 = A2(
-				$elm$core$Debug$log,
-				'ChangedTouches Count',
-				$elm$core$List$length(touches));
+			var _v0 = A2($elm$core$Debug$log, 'ChangedTouches raw content', touches);
 			return ($elm$core$List$length(touches) === 2) ? $elm$json$Json$Decode$succeed(
 				$author$project$Main$DuplicateSquare(id)) : $elm$json$Json$Decode$fail('Not a two-finger touch');
 		},
