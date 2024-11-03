@@ -32,7 +32,7 @@ type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、of
 -- 初期モデル init を定義
 init : Model
 init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
-    { squares = [ { id = 1, top = 50, left = 50, color = "red" } ]
+    { squares = [ { id = 1, top = 50, left = 50, color = "green" } ]
     , dragInfo = Nothing
     }
 
@@ -146,32 +146,31 @@ viewSquare square =
               --      Decode.fail "Not a two-finger touch"
             --)
 
+
+
 --decodeTouches : Int -> Decode.Decoder Msg
 --decodeTouches id =
-  --  Decode.field "changedTouches" (Decode.list Decode.value) --Touchesというリストの値をすべてデコード
+  --  Decode.field "changedTouches" (Decode.list Decode.value) -- Decode.list でリストに変換
     --    |> Decode.andThen
-      --      (\touches -> --changedTouchesのリストの値を引数としている。                 
+      --      (\touches ->
         --        let
-          --          _ = Debug.log "Touches list" touches -- デバッグ出力で中身を確認
+          --          _ = Debug.log "ChangedTouches raw content" touches -- デバッグログでリスト全体を表示
             --    in
               --  if List.length touches == 2 then
-                --    Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
+                --    Decode.succeed (DuplicateSquare id)
                 --else
                   --  Decode.fail "Not a two-finger touch"
             --)
 
 decodeTouches : Int -> Decode.Decoder Msg
 decodeTouches id =
-    Decode.field "changedTouches" (Decode.list Decode.value) -- Decode.list でリストに変換
+    Decode.field "changedTouches" Decode.value -- Decode.value で changedTouches フィールド全体を取得
         |> Decode.andThen
-            (\touches ->
+            (\rawChangedTouches ->
                 let
-                    _ = Debug.log "ChangedTouches raw content" touches -- デバッグログでリスト全体を表示
+                    _ = Debug.log "Raw changedTouches content" rawChangedTouches -- デバッグログで内容を表示
                 in
-                if List.length touches == 2 then
-                    Decode.succeed (DuplicateSquare id)
-                else
-                    Decode.fail "Not a two-finger touch"
+                Decode.succeed (DuplicateSquare id)
             )
 
 
