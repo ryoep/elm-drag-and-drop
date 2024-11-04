@@ -4455,7 +4455,7 @@ var $author$project$Main$init = {
 	dragInfo: $elm$core$Maybe$Nothing,
 	squares: _List_fromArray(
 		[
-			{color: 'green', id: 1, left: 50, top: 50}
+			{color: 'blue', id: 1, left: 50, top: 50}
 		])
 };
 var $elm$core$Result$Err = function (a) {
@@ -5320,19 +5320,6 @@ var $elm$json$Json$Decode$at = F2(
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $elm$core$Debug$log = _Debug_log;
-var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $author$project$Main$decodeTouches = function (id) {
-	return A2(
-		$elm$json$Json$Decode$andThen,
-		function (rawChangedTouches) {
-			var _v0 = A2($elm$core$Debug$log, 'Raw changedTouches content', rawChangedTouches);
-			return $elm$json$Json$Decode$succeed(
-				$author$project$Main$DuplicateSquare(id));
-		},
-		A2($elm$json$Json$Decode$field, 'changedTouches', $elm$json$Json$Decode$value));
-};
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5356,6 +5343,7 @@ var $elm$html$Html$Events$preventDefaultOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
 	});
+var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$Main$viewSquare = function (square) {
 	return A2(
 		$elm$html$Html$div,
@@ -5446,18 +5434,7 @@ var $author$project$Main$viewSquare = function (square) {
 							$author$project$Main$DuplicateSquare(square.id),
 							true);
 					},
-					$elm$json$Json$Decode$value)),
-				A2(
-				$elm$html$Html$Events$preventDefaultOn,
-				'Duplicate',
-				A2(
-					$elm$json$Json$Decode$map,
-					function (_v1) {
-						return _Utils_Tuple2(
-							$author$project$Main$DuplicateSquare(square.id),
-							true);
-					},
-					$author$project$Main$decodeTouches(square.id)))
+					$elm$json$Json$Decode$value))
 			]),
 		_List_Nil);
 };
