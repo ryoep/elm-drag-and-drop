@@ -4455,7 +4455,7 @@ var $author$project$Main$init = {
 	dragInfo: $elm$core$Maybe$Nothing,
 	squares: _List_fromArray(
 		[
-			{color: 'blue', id: 1, left: 50, top: 50}
+			{color: 'red', id: 1, left: 50, top: 50}
 		])
 };
 var $elm$core$Result$Err = function (a) {

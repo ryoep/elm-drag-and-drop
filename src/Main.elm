@@ -32,7 +32,7 @@ type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、of
 -- 初期モデル init を定義
 init : Model
 init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
-    { squares = [ { id = 1, top = 50, left = 50, color = "blue" } ]
+    { squares = [ { id = 1, top = 50, left = 50, color = "red" } ]
     , dragInfo = Nothing
     }
 
@@ -135,16 +135,16 @@ viewSquare square =
         ]
         []
 
-decodeTouches : Int -> Decode.Decoder Msg
-decodeTouches id =
-    Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
-        |> Decode.andThen
-            (\touches -> --changedTouchesのリストの値を引数としている。
-                if List.length touches == 2 then
-                    Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
-                else
-                    Decode.fail "Not a two-finger touch"
-            )
+--decodeTouches : Int -> Decode.Decoder Msg
+--decodeTouches id =
+  --  Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
+    --    |> Decode.andThen
+      --      (\touches -> --changedTouchesのリストの値を引数としている。
+        --        if List.length touches == 2 then
+          --          Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
+            --    else
+              --      Decode.fail "Not a two-finger touch"
+            --)
 
 
 
