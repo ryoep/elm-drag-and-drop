@@ -1,81 +1,182 @@
-port module Main exposing (..)
+module Main exposing (..)
 
-import Browser
-import Html exposing (Html, div, text)
-import Json.Decode as Decode
-
+import Browser -- Browser モジュールをインポート。Browser.sandbox などの機能を使うため
+import Html exposing (Html, div, text) -- モジュールから Html, div, text をインポート
+import Html.Attributes exposing (..) -- モジュールから全ての属性をインポート
+import Html.Events exposing (on, preventDefaultOn) -- イベントリスナーを設定するために使用
+import Json.Decode as Decode -- JSON のデコードを扱うための関数を使う
 
 -- MODEL
-
+-- Model 型エイリアスを定義
 type alias Model =
-    { touches : List TouchPoint }
+    { squares : List Square -- squares（Square のリスト）と dragInfo（Maybe DragInfo）を持つ
+    , dragInfo : Maybe DragInfo
+    }
 
+type alias Square = -- Square 型エイリアスを定義
+    { id : Int      -- 四角形を表し、id、top、left を持つ
+    , top : Float
+    , left : Float
+    , color : String
+    }
 
-type alias TouchPoint =
-    { identifier : Int
-    , clientX : Float
-    , clientY : Float }
+-- DragInfo 型エイリアスを定義
+type alias DragInfo = -- ドラッグ情報を表し、id、startX、startY、offsetX、offsetY を持つ
+    { id : Int
+    , startX : Float
+    , startY : Float
+    , offsetX : Float
+    , offsetY : Float
+    }
 
-
-initialModel : Model
-initialModel =
-    { touches = [] }
+-- 初期モデル init を定義
+init : Model
+init = -- 初期状態では squares に1つの四角形があり、dragInfo は Nothing
+    { squares = [ { id = 1, top = 50, left = 50, color = "green" } ]
+    , dragInfo = Nothing
+    }
 
 
 -- UPDATE
 
 type Msg
-    = UpdateTouches (List TouchPoint)
+    = StartDrag Int Float Float -- （ドラッグの開始）
+    | Drag Float Float -- ドラッグの移動
+    | EndDrag  -- ドラッグの終了
+    | DuplicateSquare Int --四角形の複製
 
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model -- Msg と Model を受け取り、更新された Model を返す
 update msg model =
     case msg of
-        UpdateTouches touchPoints ->
-            ( { model | touches = touchPoints }, Cmd.none )
+        StartDrag id startX startY -> -- StartDrag メッセージを受け取った場合、ドラッグの開始位置と四角形のオフセットを計算し、dragInfo に保存
+            case List.head (List.filter (\sq -> sq.id == id) model.squares) of
+                Just square ->
+                    let
+                        offsetX = startX - square.left
+                        offsetY = startY - square.top
+                    in
+                    { model
+                        | dragInfo = Just { id = id, startX = startX, startY = startY, offsetX = offsetX, offsetY = offsetY }
+                    }
+                Nothing ->
+                    model
+
+        Drag x y -> -- Drag メッセージを受け取った場合、現在のドラッグ情報を基に四角形の位置を更新
+            case model.dragInfo of
+                Just info ->
+                    let
+                        newSquares =
+                            List.map
+                                (\sq ->
+                                    if sq.id == info.id then
+                                        { sq | top = y - info.offsetY, left = x - info.offsetX }
+                                    else
+                                        sq
+                                )
+                                model.squares
+                    in
+                    { model | squares = newSquares }
+
+                Nothing ->
+                    model
+
+        EndDrag -> -- EndDrag メッセージを受け取った場合、dragInfo を Nothing に
+            { model | dragInfo = Nothing }
+
+        -- 複製機能の処理
+        DuplicateSquare id ->
+            let
+                -- 元の四角形を探す
+                maybeSquare = List.head (List.filter (\sq -> sq.id == id) model.squares)
+            in
+            case maybeSquare of
+                Just square ->
+                    -- 新しいIDを付与し、元の位置を少しずつずらして複製
+                    let
+                        newSquare = { square | id = List.length model.squares + 1, left = square.left + 20, top = square.top + 20, color = "blue" }
+                    in
+                    { model | squares = model.squares ++ [newSquare] }
+
+                Nothing ->
+                    -- 何もせず model をそのまま返す
+                    model
 
 
 -- VIEW
 
-view : Model -> Html Msg
+view : Model -> Html Msg -- Model を受け取り、Html Msg を返す
+
+-- quares のリストを viewSquare 関数を使って表示
 view model =
-    div []
-        [ text <| "Number of touches: " ++ String.fromInt (List.length model.touches)
-        , div []
-            (List.map
-                (\tp -> div [] [ text <| "ID: " ++ String.fromInt tp.identifier ++ ", X: " ++ String.fromFloat tp.clientX ++ ", Y: " ++ String.fromFloat tp.clientY ])
-                model.touches
-            )
+    div [ id "container", style "position" "relative" ]
+        (List.map viewSquare model.squares)
+
+viewSquare : Square -> Html Msg
+viewSquare square =
+    div
+        [ class "square"
+        , style "position" "absolute"
+        , style "width" "150px"
+        , style "height" "150px"
+        , style "background-color" square.color
+        , style "top" (String.fromFloat square.top ++ "px")
+        , style "left" (String.fromFloat square.left ++ "px")
+        -- ドラッグ関連のイベント
+        , on "mousedown" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
+        , on "mousemove" (Decode.map2 Drag (Decode.field "clientX" Decode.float) (Decode.field "clientY" Decode.float))
+        , on "mouseup" (Decode.succeed EndDrag)
+        , on "touchstart" (Decode.map2 (\x y -> StartDrag square.id x y) (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
+        , on "touchmove" (Decode.map2 Drag (Decode.at ["changedTouches", "0", "clientX"] Decode.float) (Decode.at ["changedTouches", "0", "clientY"] Decode.float))
+        , on "touchend" (Decode.succeed EndDrag)
+        -- 右クリック（contextmenu）で複製し、デフォルト動作を無効化
+        , preventDefaultOn "contextmenu" (Decode.map (\_ -> (DuplicateSquare square.id, True)) Decode.value)
+        -- 2本指タッチで複製し、デフォルト動作を無効化
+        , preventDefaultOn "Duplicate" (Decode.map (\_ -> (DuplicateSquare square.id, True)) (decodeTouches square.id))
         ]
+        []
+
+--decodeTouches : Int -> Decode.Decoder Msg
+--decodeTouches id =
+  --  Decode.field "changedTouches" (Decode.list Decode.value) --changedTouchesというリストの値をすべてデコード
+    --    |> Decode.andThen
+      --      (\touches -> --changedTouchesのリストの値を引数としている。
+        --        if List.length touches == 2 then
+          --          Decode.succeed (DuplicateSquare id) --DuplicateSquare id メッセージを送信
+            --    else
+              --      Decode.fail "Not a two-finger touch"
+            --)
 
 
--- SUBSCRIPTIONS
 
-port touchEvents : (List TouchPoint -> msg) -> Sub msg
+--decodeTouches : Int -> Decode.Decoder Msg
+--decodeTouches id =
+  --  Decode.field "changedTouches" (Decode.list Decode.value) -- Decode.list でリストに変換
+    --    |> Decode.andThen
+      --      (\touches ->
+        --        let
+          --          _ = Debug.log "ChangedTouches raw content" touches -- デバッグログでリスト全体を表示
+            --    in
+              --  if List.length touches == 2 then
+                --    Decode.succeed (DuplicateSquare id)
+                --else
+                  --  Decode.fail "Not a two-finger touch"
+            --)
 
+decodeTouches : Int -> Decode.Decoder Msg
+decodeTouches id =
+    Decode.field "changedTouches" Decode.value -- Decode.value で changedTouches フィールド全体を取得
+        |> Decode.andThen
+            (\rawChangedTouches ->
+                let
+                    _ = Debug.log "Raw changedTouches content" rawChangedTouches -- デバッグログで内容を表示
+                in
+                Decode.succeed (DuplicateSquare id)
+            )
 
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    touchEvents UpdateTouches
-
-
--- JSON DECODER
-
-touchPointDecoder : Decode.Decoder TouchPoint
-touchPointDecoder =
-    Decode.map3 TouchPoint
-        (Decode.field "identifier" Decode.int)
-        (Decode.field "clientX" Decode.float)
-        (Decode.field "clientY" Decode.float)
 
 
 -- MAIN
 
-main : Program () Model Msg
+-- Browser.sandbox を使用してアプリケーションを初期化。init、update、view 関数を渡す。
 main =
-    Browser.element
-        { init = \_ -> ( initialModel, Cmd.none )
-        , update = update
-        , subscriptions = subscriptions
-        , view = view
-        }
+    Browser.sandbox { init = init, update = update, view = view }
