@@ -10554,63 +10554,40 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$initialModel = {touchCount: 0};
+var $author$project$Main$initialModel = {message: 'タッチを試してください'};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
-			var count = msg.a;
-			var _v1 = A2($elm$core$Debug$log, 'Touch count detected:', count);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{touchCount: count}),
+					{message: 'Touchstart detected!'}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{touchCount: 0}),
+					{message: 'Touchend detected!'}),
 				$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$TouchEnd = {$: 'TouchEnd'};
-var $author$project$Main$TouchStart = function (a) {
-	return {$: 'TouchStart', a: a};
-};
-var $author$project$Main$describeTouch = function (count) {
-	switch (count) {
-		case 1:
-			return '一本指でタッチしています！';
-		case 2:
-			return '二本指でタッチしています！';
-		default:
-			return '指の数ha: ' + $elm$core$String$fromInt(count);
-	}
-};
-var $author$project$Main$touchCountDecoder = A2(
-	$elm$json$Json$Decode$map,
-	$elm$core$List$length,
-	A2(
-		$elm$json$Json$Decode$field,
-		'touches',
-		$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
+var $author$project$Main$TouchStart = {$: 'TouchStart'};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-				A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-				A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
-				A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-				A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
+				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'lightgreen'),
+				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchstart',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$touchCountDecoder)),
+				$elm$json$Json$Decode$succeed($author$project$Main$TouchStart)),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchend',
@@ -10618,14 +10595,7 @@ var $author$project$Main$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Main$describeTouch(model.touchCount))
-					]))
+				$elm$html$Html$text(model.message)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
@@ -10640,4 +10610,4 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"TouchStart":["Basics.Int"],"TouchEnd":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"TouchStart":[],"TouchEnd":[]}}}}})}});}(this));
