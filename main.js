@@ -5181,11 +5181,9 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var touchCount = msg.a;
-		var _v1 = A2($elm$core$Debug$log, 'Touch Count', touchCount);
 		return _Utils_update(
 			model,
 			{touches: touchCount});
@@ -5222,8 +5220,8 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						A2($elm$html$Html$Attributes$style, 'width', '200px'),
-						A2($elm$html$Html$Attributes$style, 'height', '200px'),
+						A2($elm$html$Html$Attributes$style, 'width', '400px'),
+						A2($elm$html$Html$Attributes$style, 'height', '400px'),
 						A2($elm$html$Html$Attributes$style, 'background-color', 'lightgray'),
 						A2($elm$html$Html$Attributes$style, 'margin', '20px auto'),
 						A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
@@ -5232,14 +5230,14 @@ var $author$project$Main$view = function (model) {
 						'touchstart',
 						A2(
 							$elm$json$Json$Decode$map,
-							$author$project$Main$TouchStart,
+							function (touchList) {
+								return $author$project$Main$TouchStart(
+									$elm$core$List$length(touchList));
+							},
 							A2(
-								$elm$json$Json$Decode$map,
-								$elm$core$List$length,
-								A2(
-									$elm$json$Json$Decode$field,
-									'touches',
-									$elm$json$Json$Decode$list($elm$json$Json$Decode$value)))))
+								$elm$json$Json$Decode$field,
+								'touches',
+								$elm$json$Json$Decode$list($elm$json$Json$Decode$value))))
 					]),
 				_List_fromArray(
 					[

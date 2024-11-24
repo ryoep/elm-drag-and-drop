@@ -5,7 +5,6 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (style)
 import Html.Events exposing (on)
 import Json.Decode as Decode
-import Debug
 
 
 -- MODEL
@@ -29,9 +28,6 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         TouchStart touchCount ->
-            let
-                _ = Debug.log "Touch Count" touchCount
-            in
             { model | touches = touchCount }
 
 
@@ -41,14 +37,14 @@ view : Model -> Html Msg
 view model =
     div []
         [ div
-            [ style "width" "200px"
-            , style "height" "200px"
+            [ style "width" "400px"
+            , style "height" "400px"
             , style "background-color" "lightgray"
             , style "margin" "20px auto"
             , style "border" "1px solid black"
             , on "touchstart"
-                (Decode.map TouchStart
-                    (Decode.field "touches" (Decode.list Decode.value) |> Decode.map List.length)
+                (Decode.map (\touchList -> TouchStart (List.length touchList))
+                    (Decode.field "touches" (Decode.list Decode.value))
                 )
             ]
             [ text "Touch the box" ]
