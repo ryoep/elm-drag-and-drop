@@ -28,6 +28,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TouchStart count ->
+            let
+                _ = Debug.log "Touch count detected:" count
+            in
             ( { model | touchCount = count }, Cmd.none )
 
         TouchEnd ->
@@ -59,7 +62,7 @@ describeTouch count =
             "二本指でタッチしています！"
 
         _ ->
-            "指の数: " ++ String.fromInt count
+            "指の数ha: " ++ String.fromInt count
 
 
 -- DECODERS

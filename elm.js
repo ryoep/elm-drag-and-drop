@@ -5164,10 +5164,12 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
 			var count = msg.a;
+			var _v1 = A2($elm$core$Debug$log, 'Touch count detected:', count);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
@@ -5192,7 +5194,7 @@ var $author$project$Main$describeTouch = function (count) {
 		case 2:
 			return '二本指でタッチしています！';
 		default:
-			return '指の数: ' + $elm$core$String$fromInt(count);
+			return '指の数ha: ' + $elm$core$String$fromInt(count);
 	}
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
