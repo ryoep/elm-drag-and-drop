@@ -17,7 +17,7 @@ type alias Model =
 
 init : Model
 init =
-    { color = "red"
+    { color = "green"
     , touches = 0
     }
 

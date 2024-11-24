@@ -4370,7 +4370,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$Main$init = {color: 'red', touches: 0};
+var $author$project$Main$init = {color: 'green', touches: 0};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
