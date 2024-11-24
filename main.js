@@ -5181,9 +5181,11 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var touchCount = msg.a;
+		var _v1 = A2($elm$core$Debug$log, 'Touch Count', touchCount);
 		return (touchCount === 2) ? _Utils_update(
 			model,
 			{color: 'blue', touches: touchCount}) : _Utils_update(

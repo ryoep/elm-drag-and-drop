@@ -32,6 +32,9 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         TouchStart touchCount ->
+            let
+                _ = Debug.log "Touch Count" touchCount
+            in
             if touchCount == 2 then
                 { model | color = "blue", touches = touchCount }
             else
