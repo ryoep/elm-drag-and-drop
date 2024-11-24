@@ -8,56 +8,73 @@ import Json.Decode as Decode
 
 
 -- MODEL
-
 type alias Model =
-    { touches : Int }
+    { touchCount : Int }
 
 
-init : Model
-init =
-    { touches = 0 }
+initialModel : Model
+initialModel =
+    { touchCount = 0 }
+
+
+-- MESSAGES
+type Msg
+    = TouchStart Int
+    | TouchEnd
 
 
 -- UPDATE
-
-type Msg
-    = TouchStart Int
-
-
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TouchStart touchCount ->
-            { model | touches = touchCount }
+        TouchStart count ->
+            ( { model | touchCount = count }, Cmd.none )
+
+        TouchEnd ->
+            ( { model | touchCount = 0 }, Cmd.none )
 
 
 -- VIEW
-
 view : Model -> Html Msg
 view model =
-    div []
-        [ div
-            [ style "width" "400px"
-            , style "height" "400px"
-            , style "background-color" "lightgray"
-            , style "margin" "20px auto"
-            , style "border" "1px solid black"
-            , on "touchstart"
-                (Decode.map (\touchList -> TouchStart (List.length touchList))
-                    (Decode.field "touches" (Decode.list Decode.value))
-                )
-            ]
-            [ text "Touch the box" ]
-        , div
-            [ style "text-align" "center"
-            , style "margin-top" "10px"
-            ]
-            [ text ("Number of touches: " ++ String.fromInt model.touches) ]
+    div
+        [ style "height" "100vh"
+        , style "display" "flex"
+        , style "justify-content" "center"
+        , style "align-items" "center"
+        , style "flex-direction" "column"
+        , on "touchstart" (Decode.map TouchStart touchCountDecoder)
+        , on "touchend" (Decode.succeed TouchEnd)
         ]
+        [ div [] [ text (describeTouch model.touchCount) ] ]
+
+
+describeTouch : Int -> String
+describeTouch count =
+    case count of
+        1 ->
+            "一本指でタッチしています！"
+
+        2 ->
+            "二本指でタッチしています！"
+
+        _ ->
+            "指の数: " ++ String.fromInt count
+
+
+-- DECODERS
+touchCountDecoder : Decode.Decoder Int
+touchCountDecoder =
+    Decode.field "touches" (Decode.list Decode.value)
+        |> Decode.map List.length
 
 
 -- MAIN
-
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.element
+        { init = \_ -> ( initialModel, Cmd.none )
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        , view = view
+        }
