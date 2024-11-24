@@ -4370,7 +4370,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$Main$init = {color: 'green', touches: 0};
+var $author$project$Main$init = {touches: 0};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5186,11 +5186,9 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		var touchCount = msg.a;
 		var _v1 = A2($elm$core$Debug$log, 'Touch Count', touchCount);
-		return (touchCount === 2) ? _Utils_update(
+		return _Utils_update(
 			model,
-			{color: 'blue', touches: touchCount}) : _Utils_update(
-			model,
-			{color: 'red', touches: touchCount});
+			{touches: touchCount});
 	});
 var $author$project$Main$TouchStart = function (a) {
 	return {$: 'TouchStart', a: a};
@@ -5226,7 +5224,7 @@ var $author$project$Main$view = function (model) {
 					[
 						A2($elm$html$Html$Attributes$style, 'width', '200px'),
 						A2($elm$html$Html$Attributes$style, 'height', '200px'),
-						A2($elm$html$Html$Attributes$style, 'background-color', model.color),
+						A2($elm$html$Html$Attributes$style, 'background-color', 'lightgray'),
 						A2($elm$html$Html$Attributes$style, 'margin', '20px auto'),
 						A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 						A2(
@@ -5243,7 +5241,10 @@ var $author$project$Main$view = function (model) {
 									'touches',
 									$elm$json$Json$Decode$list($elm$json$Json$Decode$value)))))
 					]),
-				_List_Nil),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Touch the box')
+					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
