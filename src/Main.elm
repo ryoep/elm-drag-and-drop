@@ -44,7 +44,7 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightgreen"
+        , style "background-color" "green"
         , style "touch-action" "none" -- デフォルトのスクロール動作を無効化
         , on "touchstart" (Decode.map TouchStart touchCountDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
