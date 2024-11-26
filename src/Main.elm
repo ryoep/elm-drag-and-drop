@@ -19,7 +19,7 @@ initialModel =
 
 -- MESSAGE
 type Msg
-    = TouchStart String -- タッチイベントの詳細を受け取る
+    = TouchStart String -- タッチイベントのデバッグ情報を受け取る
     | TouchEnd
 
 
@@ -40,21 +40,19 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "blue"
+        , style "background-color" "lightgreen"
         , style "touch-action" "none"
-        , on "touchstart" (Decode.map TouchStart debugTouchDecoder)
+        , on "touchstart" (Decode.map TouchStart debugEventDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
         ]
         [ text model.message ]
 
 
--- DECODER: タッチイベントの`touches`プロパティの情報を取得
-debugTouchDecoder : Decode.Decoder String
-debugTouchDecoder =
-    Decode.field "touches" (Decode.list Decode.value)
-        |> Decode.map (\touchList ->
-            "Touches detected: " ++ String.fromInt (List.length touchList)
-        )
+-- DECODER: イベント全体をデバッグ表示
+debugEventDecoder : Decode.Decoder String
+debugEventDecoder =
+    Decode.value
+        |> Decode.map (\v -> Debug.toString v)
 
 
 -- MAIN

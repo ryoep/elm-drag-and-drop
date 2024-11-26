@@ -10578,16 +10578,13 @@ var $author$project$Main$TouchEnd = {$: 'TouchEnd'};
 var $author$project$Main$TouchStart = function (a) {
 	return {$: 'TouchStart', a: a};
 };
-var $author$project$Main$debugTouchDecoder = A2(
+var $elm$core$Debug$toString = _Debug_toString;
+var $author$project$Main$debugEventDecoder = A2(
 	$elm$json$Json$Decode$map,
-	function (touchList) {
-		return 'Touches detected: ' + $elm$core$String$fromInt(
-			$elm$core$List$length(touchList));
+	function (v) {
+		return $elm$core$Debug$toString(v);
 	},
-	A2(
-		$elm$json$Json$Decode$field,
-		'touches',
-		$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
+	$elm$json$Json$Decode$value);
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10595,12 +10592,12 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'lightgreen'),
 				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchstart',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$debugTouchDecoder)),
+				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$debugEventDecoder)),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchend',
