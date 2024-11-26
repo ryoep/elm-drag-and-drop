@@ -10559,7 +10559,7 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$initialModel = {message: 'タッチを試してください'};
+var $author$project$Main$initialModel = {bgColor: 'lightblue', message: 'タッチを試してください'};
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $author$project$Main$touchEnd = _Platform_incomingPort(
 	'touchEnd',
@@ -10579,10 +10579,11 @@ var $author$project$Main$update = F2(
 						return 'Touches detected: ' + $elm$core$String$fromInt(count);
 				}
 			}();
+			var newColor = (count === 2) ? 'lightgreen' : 'lightblue';
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{message: newMessage}),
+					{bgColor: newColor, message: newMessage}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			return _Utils_Tuple2(
@@ -10599,7 +10600,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'green')
+				A2($elm$html$Html$Attributes$style, 'background-color', model.bgColor)
 			]),
 		_List_fromArray(
 			[

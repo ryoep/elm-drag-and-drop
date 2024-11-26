@@ -7,12 +7,16 @@ import Html.Attributes exposing (style)
 
 -- MODEL
 type alias Model =
-    { message : String }
+    { message : String
+    , bgColor : String -- 背景色を保持
+    }
 
 
 initialModel : Model
 initialModel =
-    { message = "タッチを試してください" }
+    { message = "タッチを試してください"
+    , bgColor = "lightblue" -- 初期の背景色
+    }
 
 
 -- MESSAGE
@@ -37,8 +41,14 @@ update msg model =
 
                         _ ->
                             "Touches detected: " ++ String.fromInt count
+
+                newColor =
+                    if count == 2 then
+                        "lightgreen" -- 2本指でタッチ時の背景色
+                    else
+                        "lightblue" -- その他の場合の背景色
             in
-            ( { model | message = newMessage }, Cmd.none )
+            ( { model | message = newMessage, bgColor = newColor }, Cmd.none )
 
         TouchEnd ->
             ( { model | message = "Touchend detected!" }, Cmd.none )
@@ -50,7 +60,7 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "green"
+        , style "background-color" model.bgColor -- 背景色を反映
         ]
         [ text model.message ]
 
