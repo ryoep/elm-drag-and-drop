@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Elm Touch Detection</title>
+    <title>Elm Touch Events</title>
 </head>
 <body>
-    <!-- Elmアプリを挿入するためのdiv -->
     <div id="elm-app"></div>
-
+    <script src="touch-event.js"></script>
     <script src="elm.js"></script>
     <script>
-        // Elmアプリケーションを起動
-        var app = Elm.Main.init({
+        const app = Elm.Main.init({
             node: document.getElementById('elm-app')
         });
+        document.getElementById('elm-app').elmApp = app;
     </script>
 </body>
 </html>
