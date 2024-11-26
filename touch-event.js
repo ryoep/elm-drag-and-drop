@@ -1,19 +1,28 @@
 (function () {
-    const appNode = document.getElementById('elm-app');
-    const app = appNode && appNode.elmApp;
+    window.addEventListener("load", () => {
+        const appNode = document.getElementById('elm-app');
 
-    // Touchstart listener
-    document.addEventListener("touchstart", (event) => {
-        const touchCount = event.touches.length;
-        if (app && app.ports && app.ports.touchStart) {
-            app.ports.touchStart.send(touchCount);
-        }
-    });
+        // Elmアプリを初期化
+        const app = Elm.Main.init({
+            node: appNode
+        });
 
-    // Touchend listener
-    document.addEventListener("touchend", () => {
-        if (app && app.ports && app.ports.touchEnd) {
-            app.ports.touchEnd.send(null);
-        }
+        // Elmアプリの参照を保存
+        appNode.elmApp = app;
+
+        // Touchstartリスナー: タッチポイント数を送信
+        document.addEventListener("touchstart", (event) => {
+            const touchCount = event.touches.length; // 同時にタッチしている指の数
+            if (app.ports && app.ports.touchStart) {
+                app.ports.touchStart.send(touchCount);
+            }
+        });
+
+        // Touchendリスナー: タッチ終了イベント
+        document.addEventListener("touchend", () => {
+            if (app.ports && app.ports.touchEnd) {
+                app.ports.touchEnd.send(null);
+            }
+        });
     });
 })();
