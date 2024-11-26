@@ -10561,21 +10561,21 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
 			var count = msg.a;
-			return (count === 1) ? _Utils_Tuple2(
+			var newMessage = function () {
+				switch (count) {
+					case 1:
+						return 'One finger touch detected!';
+					case 2:
+						return 'Two finger touch detected!';
+					default:
+						return 'Touchstart detected with ' + ($elm$core$String$fromInt(count) + ' fingers!');
+				}
+			}();
+			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{message: 'One finger touch detected!'}),
-				$elm$core$Platform$Cmd$none) : ((count === 2) ? _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{message: 'Two finger touch detected!'}),
-				$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						message: 'Touchstart detected with ' + ($elm$core$String$fromInt(count) + ' fingers!')
-					}),
-				$elm$core$Platform$Cmd$none));
+					{message: newMessage}),
+				$elm$core$Platform$Cmd$none);
 		} else {
 			return _Utils_Tuple2(
 				_Utils_update(
@@ -10602,7 +10602,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'green'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'lightgreen'),
 				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
 				A2(
 				$elm$html$Html$Events$on,
