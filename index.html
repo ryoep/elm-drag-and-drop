@@ -4,15 +4,37 @@
     <title>Elm Touch Events</title>
 </head>
 <body>
+    <!-- 必須: Elmアプリがマウントされる要素 -->
     <div id="elm-app"></div>
-    <script src="elm.js"></script>
-    <script src="touch-event.js"></script>
 
+    <!-- ElmアプリのJavaScript -->
+    <script src="elm.js"></script>
+
+    <!-- タッチイベントのJavaScript -->
     <script>
+        // Elmアプリを初期化
         const app = Elm.Main.init({
             node: document.getElementById('elm-app')
         });
-        document.getElementById('elm-app').elmApp = app;
+
+        // Elmアプリの参照を保存
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('elm-app').elmApp = app;
+
+            // タッチイベントリスナーを設定
+            document.addEventListener("touchstart", (event) => {
+                const touchCount = event.touches.length;
+                if (app.ports && app.ports.touchStart) {
+                    app.ports.touchStart.send(touchCount);
+                }
+            });
+
+            document.addEventListener("touchend", () => {
+                if (app.ports && app.ports.touchEnd) {
+                    app.ports.touchEnd.send(null);
+                }
+            });
+        });
     </script>
 </body>
 </html>
