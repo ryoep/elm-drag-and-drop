@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elm Touch Events</title>
 </head>
 <body>
-    <!-- 必須: Elmアプリがマウントされる要素 -->
+    <!-- Elmアプリをマウントする要素 -->
     <div id="elm-app"></div>
 
     <!-- ElmアプリのJavaScript -->
@@ -12,14 +14,17 @@
 
     <!-- タッチイベントのJavaScript -->
     <script>
-        // Elmアプリを初期化
-        const app = Elm.Main.init({
-            node: document.getElementById('elm-app')
-        });
+        // HTMLが完全に読み込まれてからスクリプトを実行
+        window.addEventListener("load", () => {
+            const appNode = document.getElementById('elm-app');
 
-        // Elmアプリの参照を保存
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('elm-app').elmApp = app;
+            // Elmアプリを初期化
+            const app = Elm.Main.init({
+                node: appNode
+            });
+
+            // Elmアプリの参照を保存
+            appNode.elmApp = app;
 
             // タッチイベントリスナーを設定
             document.addEventListener("touchstart", (event) => {
