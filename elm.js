@@ -10586,7 +10586,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'lightgreen')
+				A2($elm$html$Html$Attributes$style, 'background-color', 'red')
 			]),
 		_List_fromArray(
 			[

@@ -39,7 +39,7 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightgreen"
+        , style "background-color" "red"
         ]
         [ text model.message ]
 
