@@ -52,7 +52,7 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "green"
+        , style "background-color" "lightblue"
         , style "touch-action" "none"
         , on "touchstart" (Decode.map TouchStart touchCountDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
@@ -63,7 +63,7 @@ view model =
 -- DECODER
 touchCountDecoder : Decode.Decoder Int
 touchCountDecoder =
-    Decode.field "touches" (Decode.list Decode.value)
+    Decode.field "changedTouches" (Decode.list Decode.value)
         |> Decode.map List.length
 
 

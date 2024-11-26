@@ -10593,7 +10593,7 @@ var $author$project$Main$touchCountDecoder = A2(
 	$elm$core$List$length,
 	A2(
 		$elm$json$Json$Decode$field,
-		'touches',
+		'changedTouches',
 		$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
 var $author$project$Main$view = function (model) {
 	return A2(
@@ -10602,7 +10602,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'green'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'lightblue'),
 				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
 				A2(
 				$elm$html$Html$Events$on,
