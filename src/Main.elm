@@ -3,7 +3,6 @@ module Main exposing (..)
 import Browser
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (style)
-import Html.Events exposing (on)
 import Json.Decode as Decode
 
 
@@ -19,7 +18,7 @@ initialModel =
 
 -- MESSAGE
 type Msg
-    = TouchStart Int -- タッチポイント数を受け取る
+    = TouchStart Int
     | TouchEnd
 
 
@@ -40,19 +39,15 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightblue"
-        , style "touch-action" "none"
-        , on "touchstart" (Decode.map TouchStart touchCountDecoder)
-        , on "touchend" (Decode.succeed TouchEnd)
+        , style "background-color" "blue"
         ]
         [ text model.message ]
 
 
--- DECODER: タッチポイント数を直接取得
-touchCountDecoder : Decode.Decoder Int
-touchCountDecoder =
-    Decode.field "touches" (Decode.list Decode.value)
-        |> Decode.map List.length
+-- SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 -- MAIN
@@ -61,6 +56,6 @@ main =
     Browser.element
         { init = \_ -> ( initialModel, Cmd.none )
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , view = view
         }

@@ -10557,6 +10557,9 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Main$initialModel = {message: 'タッチを試してください'};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Main$subscriptions = function (model) {
+	return $elm$core$Platform$Sub$none;
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
@@ -10576,17 +10579,6 @@ var $author$project$Main$update = F2(
 				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$TouchEnd = {$: 'TouchEnd'};
-var $author$project$Main$TouchStart = function (a) {
-	return {$: 'TouchStart', a: a};
-};
-var $author$project$Main$touchCountDecoder = A2(
-	$elm$json$Json$Decode$map,
-	$elm$core$List$length,
-	A2(
-		$elm$json$Json$Decode$field,
-		'touches',
-		$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10594,16 +10586,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'lightblue'),
-				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
-				A2(
-				$elm$html$Html$Events$on,
-				'touchstart',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$touchCountDecoder)),
-				A2(
-				$elm$html$Html$Events$on,
-				'touchend',
-				$elm$json$Json$Decode$succeed($author$project$Main$TouchEnd))
+				A2($elm$html$Html$Attributes$style, 'background-color', 'blue')
 			]),
 		_List_fromArray(
 			[
@@ -10615,9 +10598,7 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 		init: function (_v0) {
 			return _Utils_Tuple2($author$project$Main$initialModel, $elm$core$Platform$Cmd$none);
 		},
-		subscriptions: function (_v1) {
-			return $elm$core$Platform$Sub$none;
-		},
+		subscriptions: $author$project$Main$subscriptions,
 		update: $author$project$Main$update,
 		view: $author$project$Main$view
 	});
