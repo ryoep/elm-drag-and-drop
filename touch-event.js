@@ -1,19 +1,19 @@
 (function () {
     const appNode = document.getElementById('elm-app');
-    const sendToElm = (eventName, data) => {
-        if (appNode && appNode.elmApp) {
-            appNode.elmApp.ports[eventReceiver].send({ eventName, data });
-        }
-    };
+    const app = appNode && appNode.elmApp;
 
     // Touchstart listener
     document.addEventListener("touchstart", (event) => {
         const touchCount = event.touches.length;
-        sendToElm("touchstart", touchCount);
+        if (app && app.ports && app.ports.touchStart) {
+            app.ports.touchStart.send(touchCount);
+        }
     });
 
     // Touchend listener
     document.addEventListener("touchend", () => {
-        sendToElm("touchend", 0);
+        if (app && app.ports && app.ports.touchEnd) {
+            app.ports.touchEnd.send(null);
+        }
     });
 })();
