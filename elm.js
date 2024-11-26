@@ -10560,11 +10560,13 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
-			var debugInfo = msg.a;
+			var count = msg.a;
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{message: 'Touchstart detected: ' + debugInfo}),
+					{
+						message: 'Touchstart detected with ' + ($elm$core$String$fromInt(count) + ' fingers!')
+					}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			return _Utils_Tuple2(
@@ -10578,11 +10580,12 @@ var $author$project$Main$TouchEnd = {$: 'TouchEnd'};
 var $author$project$Main$TouchStart = function (a) {
 	return {$: 'TouchStart', a: a};
 };
-var $author$project$Main$debugTouchDecoder = A2(
+var $elm$core$Debug$log = _Debug_log;
+var $author$project$Main$touchCountDecoder = A2(
 	$elm$json$Json$Decode$map,
-	function (touches) {
-		return 'Touches length: ' + $elm$core$String$fromInt(
-			$elm$core$List$length(touches));
+	function (touchList) {
+		var count = $elm$core$List$length(touchList);
+		return A2($elm$core$Debug$log, 'Touches count:', count);
 	},
 	A2(
 		$elm$json$Json$Decode$field,
@@ -10595,12 +10598,12 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'green'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'lightblue'),
 				A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchstart',
-				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$debugTouchDecoder)),
+				A2($elm$json$Json$Decode$map, $author$project$Main$TouchStart, $author$project$Main$touchCountDecoder)),
 				A2(
 				$elm$html$Html$Events$on,
 				'touchend',
@@ -10623,4 +10626,4 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"TouchStart":["String.String"],"TouchEnd":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"TouchStart":["Basics.Int"],"TouchEnd":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}}}}})}});}(this));

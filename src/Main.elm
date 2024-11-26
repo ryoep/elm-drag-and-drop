@@ -19,7 +19,7 @@ initialModel =
 
 -- MESSAGE
 type Msg
-    = TouchStart String -- タッチイベントのデバッグ情報を受け取る
+    = TouchStart Int -- タッチポイント数を受け取る
     | TouchEnd
 
 
@@ -27,8 +27,8 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TouchStart debugInfo ->
-            ( { model | message = "Touchstart detected: " ++ debugInfo }, Cmd.none )
+        TouchStart count ->
+            ( { model | message = "Touchstart detected with " ++ String.fromInt count ++ " fingers!" }, Cmd.none )
 
         TouchEnd ->
             ( { model | message = "Touchend detected!" }, Cmd.none )
@@ -40,20 +40,23 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "green"
+        , style "background-color" "lightblue"
         , style "touch-action" "none"
-        , on "touchstart" (Decode.map TouchStart debugTouchDecoder)
+        , on "touchstart" (Decode.map TouchStart touchCountDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
         ]
         [ text model.message ]
 
 
--- DECODER: タッチイベントの`touches`リストの情報を取得してデバッグ表示
-debugTouchDecoder : Decode.Decoder String
-debugTouchDecoder =
+-- DECODER: タッチポイントの数を取得
+touchCountDecoder : Decode.Decoder Int
+touchCountDecoder =
     Decode.field "touches" (Decode.list Decode.value)
-        |> Decode.map (\touches ->
-            "Touches length: " ++ String.fromInt (List.length touches)
+        |> Decode.map (\touchList ->
+            let
+                count = List.length touchList
+            in
+            Debug.log "Touches count:" count
         )
 
 
