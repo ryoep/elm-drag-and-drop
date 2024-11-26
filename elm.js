@@ -10559,7 +10559,15 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$initialModel = {bgColor: 'lightblue', message: 'タッチを試してください'};
+var $author$project$Main$initialModel = {
+	bgColor: 'lightblue',
+	message: 'タッチを試してください',
+	nextId: 2,
+	rectangles: _List_fromArray(
+		[
+			{color: 'red', id: 1, size: 50, x: 50, y: 50}
+		])
+};
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $author$project$Main$touchEnd = _Platform_incomingPort(
 	'touchEnd',
@@ -10569,6 +10577,15 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'TouchStart') {
 			var count = msg.a;
+			var newRectangles = function () {
+				if (count === 2) {
+					var newRectangle = {color: 'blue', id: model.nextId, size: 50, x: 50 + (model.nextId * 10), y: 50 + (model.nextId * 10)};
+					return A2($elm$core$List$cons, newRectangle, model.rectangles);
+				} else {
+					return model.rectangles;
+				}
+			}();
+			var newNextId = (count === 2) ? (model.nextId + 1) : model.nextId;
 			var newMessage = function () {
 				switch (count) {
 					case 1:
@@ -10579,11 +10596,10 @@ var $author$project$Main$update = F2(
 						return 'Touches detected: ' + $elm$core$String$fromInt(count);
 				}
 			}();
-			var newColor = (count === 2) ? 'lightgreen' : 'lightblue';
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{bgColor: newColor, message: newMessage}),
+					{message: newMessage, nextId: newNextId, rectangles: newRectangles}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			return _Utils_Tuple2(
@@ -10593,6 +10609,32 @@ var $author$project$Main$update = F2(
 				$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$viewRectangle = function (rect) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'left',
+				$elm$core$String$fromInt(rect.x) + 'px'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'top',
+				$elm$core$String$fromInt(rect.y) + 'px'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'width',
+				$elm$core$String$fromInt(rect.size) + 'px'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'height',
+				$elm$core$String$fromInt(rect.size) + 'px'),
+				A2($elm$html$Html$Attributes$style, 'background-color', rect.color)
+			]),
+		_List_Nil);
+};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10600,12 +10642,15 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
 				A2($elm$html$Html$Attributes$style, 'width', '100vw'),
+				A2($elm$html$Html$Attributes$style, 'position', 'relative'),
 				A2($elm$html$Html$Attributes$style, 'background-color', model.bgColor)
 			]),
-		_List_fromArray(
-			[
-				$elm$html$Html$text(model.message)
-			]));
+		_Utils_ap(
+			A2($elm$core$List$map, $author$project$Main$viewRectangle, model.rectangles),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(model.message)
+				])));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{
