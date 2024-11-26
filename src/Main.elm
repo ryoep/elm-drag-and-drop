@@ -40,19 +40,27 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightgreen"
+        , style "background-color" "green"
         , style "touch-action" "none"
-        , on "touchstart" (Decode.map TouchStart debugEventDecoder)
+        , on "touchstart" (Decode.map TouchStart touchCountDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
         ]
         [ text model.message ]
 
 
--- DECODER: イベント全体をデバッグ表示
-debugEventDecoder : Decode.Decoder String
-debugEventDecoder =
-    Decode.value
-        |> Decode.map (\v -> Debug.toString v)
+-- DECODER: タッチイベントの`touches`リストをデコード
+touchCountDecoder : Decode.Decoder String
+touchCountDecoder =
+    Decode.field "touches" (Decode.list touchPointDecoder)
+        |> Decode.map (\touchPoints ->
+            "Touches detected: " ++ String.fromInt (List.length touchPoints)
+        )
+
+
+-- DECODER: タッチポイントをデコード（今回は単純に値を取得）
+touchPointDecoder : Decode.Decoder String
+touchPointDecoder =
+    Decode.succeed "Point" -- 詳細なプロパティが必要ならここを拡張
 
 
 -- MAIN
