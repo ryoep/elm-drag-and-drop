@@ -1,9 +1,8 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (style)
-import Json.Decode as Decode
 
 
 -- MODEL
@@ -18,7 +17,7 @@ initialModel =
 
 -- MESSAGE
 type Msg
-    = TouchStart Int
+    = TouchStart Int -- JavaScriptから送られるタッチポイント数
     | TouchEnd
 
 
@@ -27,7 +26,19 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TouchStart count ->
-            ( { model | message = "Touches detected: " ++ String.fromInt count }, Cmd.none )
+            let
+                newMessage =
+                    case count of
+                        1 ->
+                            "One finger detected!"
+
+                        2 ->
+                            "Two fingers detected!"
+
+                        _ ->
+                            "Touches detected: " ++ String.fromInt count
+            in
+            ( { model | message = newMessage }, Cmd.none )
 
         TouchEnd ->
             ( { model | message = "Touchend detected!" }, Cmd.none )
@@ -39,15 +50,14 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightblue"
+        , style "background-color" "blue"
         ]
         [ text model.message ]
 
 
--- SUBSCRIPTIONS
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+-- PORTS
+port touchStart : (Int -> msg) -> Sub msg
+port touchEnd : (() -> msg) -> Sub msg
 
 
 -- MAIN
@@ -56,6 +66,10 @@ main =
     Browser.element
         { init = \_ -> ( initialModel, Cmd.none )
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ ->
+            Sub.batch
+                [ touchStart TouchStart
+                , touchEnd (\_ -> TouchEnd)
+                ]
         , view = view
         }
