@@ -40,7 +40,7 @@ view model =
     div
         [ style "height" "100vh"
         , style "width" "100vw"
-        , style "background-color" "lightblue"
+        , style "background-color" "blue"
         , style "touch-action" "none"
         , on "touchstart" (Decode.map TouchStart debugTouchDecoder)
         , on "touchend" (Decode.succeed TouchEnd)
