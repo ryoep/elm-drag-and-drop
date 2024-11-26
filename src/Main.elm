@@ -29,7 +29,7 @@ initialModel =
     { message = "タッチを試してください"
     , bgColor = "lightblue"
     , rectangles = 
-        [ { id = 1, x = 50, y = 50, size = 50, color = "red" } ] -- 初期の四角形
+        [ { id = 1, x = 50, y = 50, size = 300, color = "red" } ] -- 初期の四角形
     , nextId = 2
     }
 
